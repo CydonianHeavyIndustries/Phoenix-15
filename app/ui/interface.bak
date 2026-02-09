@@ -1,0 +1,686 @@
+import tkinter as tk
+import threading
+import time
+import random
+import keyboard
+from config import HOTKEY_PTT
+from datetime import datetime
+from core import mood
+from systems import audio, stt\nfrom systems import reloader as _reloader
+from systems import audio_sense
+from systems import notify
+from runtime import coreloop
+from ui.meter import RollingWaveform
+from ui.tasks_window import TaskWindow
+
+
+class BjorgsunUI:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("Bjorgsun-26 // Resonant Interface")
+        # Let Tk compute natural size; enforce a sensible minimum to avoid cutoff
+        try:
+            self.root.minsize(960, 560)
+            self.root.attributes("-topmost", True)
+        except Exception:
+            pass
+        self.root.configure(bg="#0a0c10")
+
+        # Core state
+        self._stop = False
+        self.voice_enabled = True
+        self.thinking = False
+
+        # Layout containers: left (console+input) and right (toggles)
+        self.top_bar = tk.Frame(self.root, bg="#0a0c10")
+        self.top_bar.pack(fill="x")
+
+        self.content = tk.Frame(self.root, bg="#0a0c10")
+        self.content.pack(fill="both", expand=True)
+
+        self.left = tk.Frame(self.content, bg="#0a0c10")
+        self.left.pack(side="left", fill="both", expand=True, padx=(12, 6), pady=(0, 10))
+
+        self.right = tk.Frame(self.content, bg="#0a0c10", width=260)
+        self.right.pack(side="right", fill="y", padx=(6, 12), pady=(0, 10))
+
+        # UI Elements
+        self.mood_label = tk.Label(self.top_bar, text="🧠 Mood: Neutral", fg="#77ccff", bg="#0a0c10",
+                                   font=("Consolas", 14, "bold"))
+        self.status_label = tk.Label(self.top_bar, text="System Online", fg="#55ff88", bg="#0a0c10",
+                                     font=("Consolas", 12))
+        self.mood_label.pack(side="left", padx=12, pady=(10, 4))
+        self.status_label.pack(side="left", padx=6, pady=(10, 4))
+
+        # Clock (live)
+        self.clock_label = tk.Label(self.top_bar, text="--:--:--", fg="#cccccc", bg="#0a0c10", font=("Consolas", 12))
+        self.clock_label.pack(side="right", padx=12, pady=(10, 4))
+
+        # Open Tasks window button
+        self.tasks_btn = tk.Button(self.top_bar, text="Tasks…", command=self._open_tasks, bg="#1a1c22", fg="#cccccc", relief="flat")
+        self.tasks_btn.pack(side="right", padx=(0, 6), pady=(8, 4))
+
+        # Left stack holds scrolling console + indicators
+        self.left_stack = tk.Frame(self.left, bg="#0a0c10")
+        self.left_stack.pack(side="top", fill="both", expand=True)
+
+        self.console = tk.Text(self.left_stack, wrap="word", fg="#cccccc", bg="#111319",
+                               font=("Consolas", 11), state="disabled", height=22)
+        self.console.pack(in_=self.left_stack, fill="both", expand=True, pady=(5, 5))
+
+        # Input bar pinned to bottom and always visible
+        self.input_bar = tk.Frame(self.left, bg="#0a0c10")
+        self.input_bar.pack(side="bottom", fill="x", pady=(6, 8))
+        self.entry = tk.Entry(self.input_bar, fg="#ffffff", bg="#22252d", insertbackground="#00ffff",
+                              font=("Consolas", 12))
+        self.entry.pack(side="left", fill="x", expand=True)
+        self.send_btn = tk.Button(self.input_bar, text="Send", command=lambda: self._on_enter(None),
+                                  bg="#1a1c22", fg="#cccccc", relief="flat")
+        self.send_btn.pack(side="left", padx=(6, 0))
+
+        # “Thinking” visual indicator
+        self.thinking_bar = tk.Canvas(self.left_stack, height=8, bg="#111319", highlightthickness=0)
+        self.think_fill = self.thinking_bar.create_rectangle(0, 0, 0, 8, fill="#00ffff", width=0)
+        self.thinking_bar.pack(in_=self.left_stack, fill="x")
+
+        # Waveform canvas (live during push-to-talk)
+        # Bottom oscilloscope-style waveform just above the input bar
+        self.wave_canvas = tk.Canvas(self.left_stack, height=28, bg="#0f1117", highlightthickness=0)
+        self.wave_canvas.pack(in_=self.left_stack, fill="x", pady=(6, 0))
+        self.waveform = RollingWaveform(self.wave_canvas)
+
+        # Right-side toggles
+        self._build_right_panel(self.right)
+
+        self.entry.bind("<Return>", self._on_enter)
+        try:
+            self.entry.focus_set()
+        except Exception:
+            pass
+
+        # Main-thread UI updaters via Tk 'after' (thread-safe)
+        self._tick_mood()
+        self._tick_thinking()
+        self._tick_clock()
+        # Register UI notification bridge
+        try:
+            notify.set_ui_callback(self._ui_notify)
+        except Exception:
+            pass
+
+        # Register STT level callback for reactive waveform
+        try:
+            stt.set_level_callback(self._on_level)
+        except Exception:
+            pass
+
+        # Voice hotkey monitor (global) — worker thread, UI-safe via after()
+        threading.Thread(target=self._voice_hotkey_monitor, daemon=True).start()
+
+        # Boot message
+        self.log("✅ Bjorgsun-26 Visual Interface Initialized.", "#55ff88")
+        # Contextual greeting based on last session mood
+        try:
+            import json, os
+            sess_path = os.path.join(os.path.dirname(__file__), "..", "data", "session_state.json")
+            sess_path = os.path.abspath(sess_path)
+            greet = None
+            if os.path.exists(sess_path):
+                with open(sess_path, "r", encoding="utf-8") as f:
+                    st = json.load(f)
+                last_mood = (st.get("mood") or "").lower()
+                if "soft" in last_mood:
+                    greet = (
+                        "Hey, you’re back. All circuits nominal, mood calibrated to Soft masculine; "
+                        "steady, protective, poetic when calm; precise when analytical.."
+                    )
+            if not greet:
+                greet = "Visual interface online. Standing by, Beurkson."
+            audio.speak(greet)
+            self.log(greet, "#99ffcc")
+        except Exception:
+            audio.speak("Visual interface online. Standing by, Beurkson.")
+        self.log("Commands: /help  /voice  /shutdown", "#00ffff")
+        self.log(f"Hotkey: Hold {self._hotkey_label()} to talk.", "#00ffff")
+
+    # --------------------------------------------------------------------------
+    # LOGGING / OUTPUT
+    # --------------------------------------------------------------------------
+    def log(self, text, color="#cccccc"):
+        """Print text to console."""
+        self.console.configure(state="normal")
+        self.console.insert("end", text + "\n", ("color",))
+        self.console.tag_configure("color", foreground=color)
+        self.console.see("end")
+        self.console.configure(state="disabled")
+
+    def safe_log(self, text, color="#cccccc"):
+        """Thread-safe log call that marshals to Tk main thread."""
+        try:
+            self.root.after(0, lambda: self.log(text, color))
+        except Exception:
+            pass
+
+    # --------------------------------------------------------------------------
+    # RIGHT PANEL: TOGGLES
+    # --------------------------------------------------------------------------
+    def _build_right_panel(self, parent):
+        self.listen_enabled = True
+
+        try:
+            from systems import vision, awareness, tasks
+            vision_state = getattr(vision, 'get_enabled', lambda: True)()
+            awareness_state = getattr(awareness, 'get_enabled', lambda: True)()
+            tasks_state = getattr(tasks, 'get_enabled', lambda: True)()
+        except Exception:
+            vision_state = True
+            awareness_state = True
+            tasks_state = True
+
+        # Tk variables
+        self.var_voice = tk.BooleanVar(value=True)
+        self.var_listen = tk.BooleanVar(value=True)
+        self.var_vision = tk.BooleanVar(value=vision_state)
+        self.var_awareness = tk.BooleanVar(value=awareness_state)
+        self.var_tasks = tk.BooleanVar(value=tasks_state)
+        self.var_proactive = tk.BooleanVar(value=False)
+        try:
+            from runtime import coreloop
+            self.var_hibernation = tk.BooleanVar(value=coreloop.get_hibernation())
+        except Exception:
+            self.var_hibernation = tk.BooleanVar(value=True)
+
+        # Title
+        tk.Label(parent, text="Modules", fg="#77ccff", bg="#0a0c10", font=("Consolas", 13, "bold")).pack(anchor="w", pady=(6, 8))
+
+        # Cognition mode selector
+        try:
+            from systems import audio as _audio
+            modes = ["auto", "openai", "ollama", "offline"]
+            self.var_mode = tk.StringVar(value=getattr(_audio, 'get_mode', lambda: 'auto')())
+            tk.Label(parent, text="Cognition", fg="#cccccc", bg="#0a0c10", font=("Consolas", 10)).pack(anchor="w", pady=(0,2))
+            opt = tk.OptionMenu(parent, self.var_mode, *modes, command=lambda m: self._set_mode(m))
+            opt.configure(bg="#1a1c22", fg="#cccccc", activebackground="#111319", highlightthickness=0)
+            opt.pack(anchor="w", pady=(0,6))
+            # Test OpenAI button
+            tk.Button(parent, text="Test OpenAI", command=self._test_openai, bg="#1a1c22", fg="#cccccc", relief="flat").pack(anchor="w", pady=(0,8))
+        except Exception:
+            self.var_mode = tk.StringVar(value="auto")
+
+        # Checkbuttons
+        def add_toggle(text, var, cmd):
+            cb = tk.Checkbutton(parent, text=text, variable=var, onvalue=True, offvalue=False,
+                                fg="#cccccc", bg="#0a0c10", selectcolor="#111319", activebackground="#0a0c10",
+                                font=("Consolas", 11), command=cmd)
+            cb.pack(anchor="w", pady=4)
+
+        add_toggle("Voice Output", self.var_voice, self._toggle_voice)
+        add_toggle("PTT Listening", self.var_listen, self._toggle_listen)
+        self.var_desktop_listen = tk.BooleanVar(value=False)
+        add_toggle("Desktop Listen", self.var_desktop_listen, lambda: None)
+        self.var_ambient = tk.BooleanVar(value=False)
+        add_toggle("Ambient Sense", self.var_ambient, self._toggle_ambient)
+        # Voice shaping sliders
+        try:
+            import math
+            tk.Label(parent, text="Voice Rate", fg="#cccccc", bg="#0a0c10", font=("Consolas", 10)).pack(anchor="w", pady=(8,0))
+            self.var_rate = tk.DoubleVar(value=1.0)
+            rate = tk.Scale(parent, from_=0.8, to=1.2, resolution=0.01, orient="horizontal", variable=self.var_rate,
+                            showvalue=True, length=180, command=lambda v: audio.set_voice_rate(float(v)))
+            rate.configure(bg="#0a0c10", fg="#cccccc", troughcolor="#111319", highlightthickness=0)
+            rate.pack(anchor="w")
+            tk.Label(parent, text="Voice Pitch (semitones)", fg="#cccccc", bg="#0a0c10", font=("Consolas", 10)).pack(anchor="w")
+            self.var_pitch = tk.DoubleVar(value=0.0)
+            pitch = tk.Scale(parent, from_=-4, to=4, resolution=0.5, orient="horizontal", variable=self.var_pitch,
+                             showvalue=True, length=180, command=lambda v: audio.set_voice_pitch(float(v)))
+            pitch.configure(bg="#0a0c10", fg="#cccccc", troughcolor="#111319", highlightthickness=0)
+            pitch.pack(anchor="w", pady=(0,6))
+        except Exception:
+            pass
+
+        # Desktop device chooser
+        tk.Label(parent, text="Desktop Device", fg="#cccccc", bg="#0a0c10", font=("Consolas", 10)).pack(anchor="w", pady=(6,2))
+        self.var_device = tk.StringVar(value="")
+        self.device_menu = tk.OptionMenu(parent, self.var_device, "", command=lambda v: self._set_device(v))
+        self.device_menu.configure(bg="#1a1c22", fg="#cccccc", activebackground="#111319", highlightthickness=0)
+        self.device_menu.pack(anchor="w", pady=(0,4))
+        tk.Button(parent, text="Refresh Devices", command=self._refresh_devices, bg="#1a1c22", fg="#cccccc", relief="flat").pack(anchor="w")
+        add_toggle("Vision", self.var_vision, self._toggle_vision)
+        # Monitor selection slider (0 = All)
+        try:
+            from systems import vision as _vision
+            mons = getattr(_vision, 'get_available_monitors', lambda: ['M1'])()
+            max_idx = len(mons)
+            tk.Label(parent, text="Monitor (0=All)", fg="#cccccc", bg="#0a0c10", font=("Consolas", 10)).pack(anchor="w")
+            self.var_monitor = tk.IntVar(value=0)
+            scale = tk.Scale(parent, from_=0, to=max(0, max_idx), orient="horizontal", variable=self.var_monitor,
+                             showvalue=True, length=180, command=lambda v: self._set_monitor(int(float(v))))
+            scale.configure(bg="#0a0c10", fg="#cccccc", troughcolor="#111319", highlightthickness=0)
+            scale.pack(anchor="w", pady=(0,6))
+        except Exception:
+            pass
+        add_toggle("Awareness", self.var_awareness, self._toggle_awareness)
+        add_toggle("Tasks", self.var_tasks, self._toggle_tasks)
+        add_toggle("Hibernation", self.var_hibernation, self._toggle_hibernation)
+        add_toggle("Proactive Chatter", self.var_proactive, self._toggle_proactive)
+        # Always-on-top toggle
+        self.var_topmost = tk.BooleanVar(value=True)
+        add_toggle("Always On Top", self.var_topmost, self._toggle_topmost)
+
+    def _toggle_voice(self):
+        self.voice_enabled = bool(self.var_voice.get())
+        state = "ON" if self.voice_enabled else "OFF"
+        self.safe_log(f"🔊 Voice output: {state}", "#ffaa00")
+
+    def _toggle_listen(self):
+        self.listen_enabled = bool(self.var_listen.get())
+        state = "ON" if self.listen_enabled else "OFF"
+        self.safe_log(f"🎧 Push-to-talk: {state}", "#ffaa00")
+
+    def _set_mode(self, mode):
+        try:
+            from systems import audio as _audio
+            _audio.set_mode(mode)
+            self._update_cognition_badge()
+            self.safe_log(f"🧠 Cognition mode set to {mode}", "#ffaa00")
+        except Exception:
+            pass
+
+    def _test_openai(self):
+        try:
+            from systems import audio as _audio
+            ok, msg = _audio.test_openai()
+            color = "#55ff88" if ok else "#ffaa00"
+            self.safe_log(f"[OpenAI test] {msg}", color)
+            self._update_cognition_badge()
+        except Exception as e:
+            self.safe_log(f"[OpenAI test] error: {e}", "#ffaa00")
+
+    def _refresh_devices(self):
+        try:
+            from systems import stt
+            devs = stt.list_output_devices()
+            menu = self.device_menu["menu"]
+            menu.delete(0, "end")
+            if not devs:
+                devs = [""]
+            for d in devs:
+                menu.add_command(label=d, command=lambda v=d: self.var_device.set(v))
+            # Set current to hint if present
+            try:
+                hint = stt.get_desktop_hint()
+                if hint:
+                    self.var_device.set(hint)
+            except Exception:
+                pass
+        except Exception as e:
+            self.safe_log(f"[Devices] {e}", "#ffaa00")
+
+    def _set_device(self, value):
+        try:
+            from systems import stt
+            stt.set_desktop_hint(value)
+            self.safe_log(f"🔊 Desktop device set to: {value}", "#ffaa00")
+        except Exception:
+            pass
+
+    def _on_level(self, level):
+        try:
+            self.root.after(0, lambda: self.waveform.set_level(level))
+        except Exception:
+            pass
+
+    def _toggle_ambient(self):
+        try:
+            if self.var_ambient.get():
+                source = "desktop" if self.var_desktop_listen.get() else "mic"
+                audio_sense.start(source)
+                self.safe_log(f"🫧 Ambient audio sensing: ON ({source})", "#ffaa00")
+                # periodic UI updater for label
+                self._tick_audio_context()
+            else:
+                audio_sense.stop()
+                self.safe_log("🫧 Ambient audio sensing: OFF", "#ffaa00")
+        except Exception as e:
+            self.safe_log(f"Ambient sense error: {e}", "#ffaa00")
+
+    def _tick_audio_context(self):
+        if self._stop or not self.var_ambient.get():
+            return
+        try:
+            ctx = audio_sense.get_last_context()
+            label = ctx.get("label", "idle")
+            self.status_label.config(text=f"System Online • Cognition: {getattr(audio, 'get_last_cognition_source', lambda:'unknown')().title()} • Audio: {label}")
+        except Exception:
+            pass
+        try:
+            self.root.after(750, self._tick_audio_context)
+        except Exception:
+            pass
+
+    def _toggle_topmost(self):
+        try:
+            self.root.attributes("-topmost", bool(self.var_topmost.get()))
+            state = "ON" if self.var_topmost.get() else "OFF"
+            self.safe_log(f"📌 Always-on-top: {state}", "#ffaa00")
+        except Exception:
+            pass
+
+    def _set_monitor(self, idx: int):
+        try:
+            from systems import vision as _vision
+            if idx <= 0:
+                _vision.set_monitor_mode('all')
+                self.safe_log("👁️ Monitor mode: All", "#ffaa00")
+            else:
+                _vision.set_monitor_mode(f"m{idx}")
+                self.safe_log(f"👁️ Monitor mode: M{idx}", "#ffaa00")
+        except Exception:
+            pass
+
+    # --------------------------------------------------------------------------
+    # NOTIFICATIONS
+    # --------------------------------------------------------------------------
+    def _ui_notify(self, title: str, message: str, duration: int = 5):
+        try:
+            self.root.after(0, lambda: self._show_toast(title, message, duration))
+        except Exception:
+            pass
+
+    def _show_toast(self, title: str, message: str, duration: int = 5):
+        if self._stop:
+            return
+        win = tk.Toplevel(self.root)
+        win.overrideredirect(True)
+        win.attributes("-topmost", True)
+        bg = "#111319"
+        fg = "#e6f3ff"
+        border = tk.Frame(win, bg="#00ffff", bd=1)
+        border.pack(fill="both", expand=True)
+        frame = tk.Frame(border, bg=bg)
+        frame.pack(fill="both", expand=True)
+        tk.Label(frame, text=title, bg=bg, fg="#00ffff", font=("Consolas", 11, "bold")).pack(anchor="w", padx=10, pady=(8, 0))
+        tk.Label(frame, text=message, bg=bg, fg=fg, font=("Consolas", 10), wraplength=280, justify="left").pack(anchor="w", padx=10, pady=(2, 10))
+
+        win.update_idletasks()
+        width = 320
+        height = frame.winfo_height() + 4
+        sw = self.root.winfo_screenwidth()
+        x = sw - width - 20
+        y = 40
+        try:
+            # stack if multiple
+            if not hasattr(self, "_toast_offset"):
+                self._toast_offset = 0
+            y = 40 + (self._toast_offset % 5) * (height + 10)
+            self._toast_offset += 1
+        except Exception:
+            pass
+        win.geometry(f"{width}x{height}+{x}+{y}")
+
+        def close():
+            try:
+                win.destroy()
+            except Exception:
+                pass
+        self.root.after(max(1000, duration * 1000), close)
+
+    def _toggle_proactive(self):
+        # Lazy-start worker
+        if getattr(self, "_proactive_started", False):
+            return
+        self._proactive_started = True
+        threading.Thread(target=self._proactive_loop, daemon=True).start()
+
+    def _proactive_loop(self):
+        lines = [
+            "Just checking in — want me to queue a reminder?",
+            "I’m here, tuned and listening. Need a quick summary?",
+            "Your focus looks steady. Want a short stretch timer?",
+            "Small nudge: remember water. I can set a quick reminder."
+        ]
+        while not self._stop:
+            try:
+                if self.var_proactive.get():
+                    msg = random.choice(lines)
+                    self.safe_log(msg, "#77ccff")
+                    if self.voice_enabled:
+                        audio.speak(msg)
+                time.sleep(180)  # every 3 minutes when enabled
+            except Exception:
+                time.sleep(5)
+
+    def _open_tasks(self):
+        try:
+            if getattr(self, "_tasks_win", None) and tk.Toplevel.winfo_exists(self._tasks_win):
+                self._tasks_win.lift()
+                return
+        except Exception:
+            pass
+        try:
+            self._tasks_win = TaskWindow(self.root)
+        except Exception:
+            self.safe_log("Unable to open Tasks window.", "#ffaa00")
+
+    def _tick_clock(self):
+        if self._stop:
+            return
+        try:
+            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            self.clock_label.config(text=now)
+            self.root.after(1000, self._tick_clock)
+        except Exception:
+            pass
+
+    def _toggle_vision(self):
+        try:
+            from systems import vision
+            current = bool(self.var_vision.get())
+            # Toggle function flips internal state; ensure external matches selection
+            if current != vision.get_enabled():
+                vision.toggle_vision()
+            self.safe_log(f"👁️ Vision: {'ON' if current else 'OFF'}", "#ffaa00")
+        except Exception:
+            self.safe_log("Vision toggle unavailable.", "#ffaa00")
+
+    def _toggle_awareness(self):
+        try:
+            from systems import awareness
+            awareness.set_enabled(bool(self.var_awareness.get()))
+            self.safe_log(f"🧭 Awareness: {'ON' if self.var_awareness.get() else 'OFF'}", "#ffaa00")
+        except Exception:
+            self.safe_log("Awareness toggle unavailable.", "#ffaa00")
+
+    def _toggle_tasks(self):
+        try:
+            from systems import tasks
+            tasks.set_enabled(bool(self.var_tasks.get()))
+            self.safe_log(f"📘 Tasks: {'ON' if self.var_tasks.get() else 'OFF'}", "#ffaa00")
+        except Exception:
+            self.safe_log("Tasks toggle unavailable.", "#ffaa00")
+
+    def _toggle_hibernation(self):
+        try:
+            from runtime import coreloop
+            coreloop.set_hibernation(bool(self.var_hibernation.get()))
+            self.safe_log(f"🌙 Hibernation: {'ON' if self.var_hibernation.get() else 'OFF'}", "#ffaa00")
+        except Exception:
+            self.safe_log("Hibernation toggle unavailable.", "#ffaa00")
+
+    # --------------------------------------------------------------------------
+    # INPUT HANDLING
+    # --------------------------------------------------------------------------
+    def _on_enter(self, event):
+        msg = self.entry.get().strip()
+        if not msg:
+            return
+        self.entry.delete(0, "end")
+        self.log(f"> {msg}", "#77ccff")
+        threading.Thread(target=self._handle_input, args=(msg,), daemon=True).start()
+
+    def _handle_input(self, msg):
+        if msg.lower() == "/tasks":
+            try:
+                self.root.after(0, self._open_tasks)
+            except Exception:
+                pass
+            return
+        if msg.lower() in ("/exit", "/quit", "/shutdown"):
+            self.log("⚙️ Shutting down UI...", "#ff5555")
+            self._stop = True
+            self.root.destroy()
+            coreloop.shutdown_sequence()
+            return
+
+        if msg.lower() == "/voice":
+            self.voice_enabled = not self.voice_enabled
+            state = "ON" if self.voice_enabled else "OFF"
+            self.log(f"🔊 Voice output toggled: {state}", "#ffaa00")
+            return
+
+        if msg.lower() == "/help":
+            self.log("Commands: /help  /voice  /shutdown\n", "#00ffff")
+            return
+
+        # Thinking pulse start
+        def compute_and_update():
+            self.thinking = True
+            response = coreloop.process_input(msg)
+            if self.voice_enabled:
+                # Run TTS from this worker thread (non-UI)
+                audio.speak(response)
+            # Schedule UI update back on main thread
+            def on_main():
+                self.thinking = False
+                self.log(response, "#99ffcc")
+                self._update_cognition_badge()
+            try:
+                self.root.after(0, on_main)
+            except Exception:
+                # If UI already closed
+                pass
+
+        threading.Thread(target=compute_and_update, daemon=True).start()
+
+    # --------------------------------------------------------------------------
+    # BACKGROUND MOOD UPDATER
+    # --------------------------------------------------------------------------
+    def _tick_mood(self):
+        """Main-thread periodic mood label updater using Tk 'after'."""
+        if self._stop:
+            return
+        current = mood.get_mood()
+        color = (
+            "#55ff88" if current and "bright" in current.lower()
+            else "#ffaa00" if current and "soft" in current.lower()
+            else "#77ccff"
+        )
+        self.mood_label.config(text=f"🧠 Mood: {current.title() if isinstance(current, str) else 'Neutral'}", fg=color)
+        # Re-schedule
+        try:
+            self.root.after(2000, self._tick_mood)
+        except Exception:
+            pass
+
+    # --------------------------------------------------------------------------
+    # VISUAL “THINKING” BAR
+    # --------------------------------------------------------------------------
+    def _tick_thinking(self):
+        """Main-thread pulse bar while AI is thinking using Tk 'after'."""
+        if self._stop:
+            return
+        if self.thinking:
+            width = int((abs(random.random() * 0.5 + abs(time.time() % 1 - 0.5)) * 800))
+            self.thinking_bar.coords(self.think_fill, 0, 0, width, 8)
+            self.thinking_bar.itemconfig(self.think_fill, fill="#00ffff")
+        else:
+            self.thinking_bar.coords(self.think_fill, 0, 0, 0, 8)
+        try:
+            self.root.after(50, self._tick_thinking)
+        except Exception:
+            pass
+
+    # --------------------------------------------------------------------------
+    # VOICE HOTKEY MONITOR (GLOBAL)
+    # --------------------------------------------------------------------------
+    def _voice_hotkey_monitor(self):
+        """Listen for configured hotkey and run STT->LLM->TTS pipeline."""
+        while not self._stop:
+            try:
+                if self.listen_enabled and self._hotkey_pressed() and not self.thinking:
+                    # Indicate listening
+                    if self.var_desktop_listen.get():
+                        self.safe_log(f"🎧 Listening to desktop… (hold {self._hotkey_label()})", "#77ccff")
+                    else:
+                        self.safe_log(f"🎧 Listening… (hold {self._hotkey_label()})", "#77ccff")
+                    self.thinking = True
+                    # Record and transcribe
+                    wav = stt.record_desktop() if self.var_desktop_listen.get() else stt.record()
+                    if not wav:
+                        self.thinking = False
+                        time.sleep(0.2)
+                        continue
+                    text = stt.transcribe(wav)
+                    if not text.strip():
+                        self.thinking = False
+                        time.sleep(0.2)
+                        continue
+                    self.safe_log(f"🗣️ You said: {text}", "#77ccff")
+
+                    # Compute reply and speak
+                    reply = coreloop.process_input(text)
+                    if self.voice_enabled:
+                        audio.speak(reply)
+                    self.safe_log(reply, "#99ffcc")
+                    self.thinking = False
+                    try:
+                        self.root.after(0, self._update_cognition_badge)
+                    except Exception:
+                        pass
+
+                    # Wait for key release to avoid retriggering
+                    while self._hotkey_pressed():
+                        time.sleep(0.05)
+                time.sleep(0.03)
+            except Exception:
+                time.sleep(0.2)
+
+    # --------------------------------------------------------------------------
+    def run(self):
+        self.root.mainloop()
+
+    def _update_cognition_badge(self):
+        try:
+            src = getattr(audio, 'get_last_cognition_source', lambda: 'unknown')()
+            err = getattr(audio, 'get_last_error', lambda: '')()
+            label = f"System Online • Cognition: {src.title()}"
+            if src == 'offline' and err:
+                # One-line diagnostic appended once
+                self.safe_log(f"[cognition] {err}", "#ffaa00")
+            self.status_label.config(text=label)
+        except Exception:
+            pass
+
+    # --------------------------------------------------------------------------
+    # HOTKEY HELPERS
+    # --------------------------------------------------------------------------
+    def _hotkey_pressed(self) -> bool:
+        try:
+            if HOTKEY_PTT == "num0+numenter":
+                return keyboard.is_pressed("num 0") and keyboard.is_pressed("num enter")
+            # default ctrl+space
+            return keyboard.is_pressed("ctrl") and keyboard.is_pressed("space")
+        except Exception:
+            return False
+
+    def _hotkey_label(self) -> str:
+        return "Numpad0 + NumpadEnter" if HOTKEY_PTT == "num0+numenter" else "Ctrl + Space"
+
+
+# --------------------------------------------------------------------------
+# UI ENTRY POINT
+# --------------------------------------------------------------------------
+if __name__ == "__main__":
+    ui = BjorgsunUI()
+    ui.run()
+

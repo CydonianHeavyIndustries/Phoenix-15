@@ -1,0 +1,74 @@
+{
+  "name": "Interstellar Official Soundtrack _ Do Not Go Gentle Into That Good Night  Cast _ WaterTower.mp3",
+  "sr": 44100,
+  "duration_sec": 60.0,
+  "centroid_hz": 2216.671557709761,
+  "rolloff_hz": 4556.0,
+  "peaks": [
+    {
+      "hz": 874.1999999999999,
+      "amplitude": 2135.588164566658
+    },
+    {
+      "hz": 874.2166666666667,
+      "amplitude": 2101.1527850646144
+    },
+    {
+      "hz": 874.2333333333333,
+      "amplitude": 1753.0206694830042
+    },
+    {
+      "hz": 874.1833333333333,
+      "amplitude": 1700.7705043644446
+    },
+    {
+      "hz": 874.2833333333333,
+      "amplitude": 1337.371651580321
+    }
+  ],
+  "band_energy": [
+    {
+      "label": "sub",
+      "lo": 20,
+      "hi": 60,
+      "energy": 15727.85090921074
+    },
+    {
+      "label": "bass",
+      "lo": 60,
+      "hi": 120,
+      "energy": 240322.21855509808
+    },
+    {
+      "label": "low_mid",
+      "lo": 120,
+      "hi": 180,
+      "energy": 541180.8220857516
+    },
+    {
+      "label": "mid",
+      "lo": 180,
+      "hi": 300,
+      "energy": 1198975.066039237
+    },
+    {
+      "label": "upper_mid",
+      "lo": 300,
+      "hi": 500,
+      "energy": 1859055.100088885
+    },
+    {
+      "label": "presence",
+      "lo": 500,
+      "hi": 1000,
+      "energy": 2984980.6853481745
+    },
+    {
+      "label": "brilliance",
+      "lo": 1000,
+      "hi": 4000,
+      "energy": 4159631.197911119
+    }
+  ],
+  "matched_emotions": []
+}

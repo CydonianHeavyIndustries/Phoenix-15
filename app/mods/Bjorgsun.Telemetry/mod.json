@@ -1,0 +1,16 @@
+{
+  "Name": "Bjorgsun.Telemetry",
+  "Description": "Exports JSON telemetry for Bjorgsun-26.exe",
+  "Version": "1.0.0",
+  "LoadPriority": 1,
+  "Dependencies": [],
+  "Scripts": {
+    "Server": [],
+    "Client": [
+      {
+        "Path": "scripts/vscripts/bjtelemetry.nut",
+        "RunOnLevelInit": true
+      }
+    ]
+  }
+}

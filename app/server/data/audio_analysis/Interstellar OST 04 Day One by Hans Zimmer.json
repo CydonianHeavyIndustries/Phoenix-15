@@ -1,0 +1,99 @@
+{
+  "name": "Interstellar OST 04 Day One by Hans Zimmer.mp3",
+  "sr": 44100,
+  "duration_sec": 60.0,
+  "centroid_hz": 889.0231262026323,
+  "rolloff_hz": 1314.5666666666666,
+  "peaks": [
+    {
+      "hz": 328.5333333333333,
+      "amplitude": 3838.5799953400856
+    },
+    {
+      "hz": 329.6,
+      "amplitude": 3195.708872048997
+    },
+    {
+      "hz": 329.6166666666667,
+      "amplitude": 2941.2021557581625
+    },
+    {
+      "hz": 246.95,
+      "amplitude": 2782.4065019811474
+    },
+    {
+      "hz": 247.13333333333333,
+      "amplitude": 2615.4289214240252
+    }
+  ],
+  "band_energy": [
+    {
+      "label": "sub",
+      "lo": 20,
+      "hi": 60,
+      "energy": 71483.2510560475
+    },
+    {
+      "label": "bass",
+      "lo": 60,
+      "hi": 120,
+      "energy": 56874.68463617924
+    },
+    {
+      "label": "low_mid",
+      "lo": 120,
+      "hi": 180,
+      "energy": 140663.41328382323
+    },
+    {
+      "label": "mid",
+      "lo": 180,
+      "hi": 300,
+      "energy": 530542.5856184766
+    },
+    {
+      "label": "upper_mid",
+      "lo": 300,
+      "hi": 500,
+      "energy": 979089.4224890473
+    },
+    {
+      "label": "presence",
+      "lo": 500,
+      "hi": 1000,
+      "energy": 929431.7107121447
+    },
+    {
+      "label": "brilliance",
+      "lo": 1000,
+      "hi": 4000,
+      "energy": 579520.9539788727
+    }
+  ],
+  "matched_emotions": [
+    {
+      "hz": 328.5333333333333,
+      "emotion": "hope"
+    },
+    {
+      "hz": 328.5333333333333,
+      "emotion": "hope"
+    },
+    {
+      "hz": 329.6,
+      "emotion": "hope"
+    },
+    {
+      "hz": 329.6,
+      "emotion": "hope"
+    },
+    {
+      "hz": 329.6166666666667,
+      "emotion": "hope"
+    },
+    {
+      "hz": 329.6166666666667,
+      "emotion": "hope"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "timestamp": "20251117_174504",
+  "chosen_files": {
+    "__init__.py": "identical",
+    "audio.py": "identical",
+    "audio_sense.py": "identical",
+    "awareness.py": "identical",
+    "briefing.py": "identical",
+    "calm_shutdown.py": "identical",
+    "discord_bridge.py": "identical",
+    "dreams.py": "identical",
+    "dreamscreen.py": "identical",
+    "gaming_bridge.py": "identical",
+    "hibernation.py": "identical",
+    "hypershift.py": "identical",
+    "notify.py": "identical",
+    "overlay_web.py": "identical",
+    "reloader.py": "identical",
+    "ronin_ai.py": "identical",
+    "selfcheck.py": "identical",
+    "stories.py": "identical",
+    "stt.py": "identical",
+    "tasks.py": "identical",
+    "therapy.py": "identical",
+    "timekeeper.py": "identical",
+    "titanfall.py": "identical",
+    "vision.py": "identical",
+    "voicemeeter.py": "identical",
+    "xsoverlay.py": "identical"
+  }
+}

@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+
+if ! id phoenix >/dev/null 2>&1; then
+  useradd -m -s /bin/bash phoenix
+  echo "phoenix:phoenix" | chpasswd
+fi
+
+usermod -aG sudo,audio,video,plugdev phoenix || true

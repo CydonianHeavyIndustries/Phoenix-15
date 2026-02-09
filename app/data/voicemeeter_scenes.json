@@ -1,0 +1,82 @@
+{
+  "scenes": [
+    {
+      "id": "potato_stream_ai",
+      "label": "Potato // Stream+AI",
+      "description": "Routes match the shared Potato layout: A1=Razer, A2=USB speakers, A3=Vive, A4=OBS VB-Cable, A5=AI Listen bus.",
+      "profile": "data/voicemeeter_profiles/Bjorgsun_Potato.xml",
+      "buses": {
+        "A1": "KS: Razer Headset (Razer Kraken Ultimate)",
+        "A2": "WDM: USB SPEAKERS (High Definition Audio Device)",
+        "A3": "WDM: VR Headset (4- HTC Vive)",
+        "A4": "WDM: Cable Input (VB-Audio Virtual Cable)",
+        "A5": "WDM: AI Listen Bus (VB-Audio Virtual Cable)"
+      },
+      "strips": [
+        {
+          "index": 0,
+          "name": "Razer Mic",
+          "routes": {
+            "B1": 1,
+            "B2": 1,
+            "A1": 0,
+            "A2": 0,
+            "A3": 0,
+            "A4": 0,
+            "A5": 0
+          }
+        },
+        {
+          "index": 1,
+          "name": "AI Hears Bus",
+          "routes": {
+            "B1": 1,
+            "A1": 0,
+            "A2": 0,
+            "A3": 0,
+            "A4": 0,
+            "A5": 0
+          }
+        },
+        {
+          "index": 2,
+          "name": "VR Mic",
+          "routes": {
+            "A1": 1,
+            "B1": 1,
+            "B2": 1
+          }
+        },
+        {
+          "index": 5,
+          "name": "Desktop",
+          "routes": {
+            "A1": 1,
+            "A2": 1,
+            "A5": 1,
+            "B1": 1
+          }
+        },
+        {
+          "index": 6,
+          "name": "Discord",
+          "routes": {
+            "A1": 1,
+            "A5": 1,
+            "B1": 1
+          }
+        },
+        {
+          "index": 7,
+          "name": "Spotify / Media",
+          "routes": {
+            "A1": 1,
+            "A2": 1,
+            "B1": 0,
+            "A5": 0
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,262 @@
+--- canonical/ui\interface.py
++++ other/ui\interface.py
+@@ -1178,17 +1178,12 @@
+         self._notebook = nb
+         self.tab_modules = tk.Frame(nb, bg=theme.COLORS["bg"])
+         self.tab_audio = tk.Frame(nb, bg=theme.COLORS["bg"])
+-        # New Game tab for Titanfall/stream status
+-        self.tab_game = tk.Frame(nb, bg=theme.COLORS["bg"])
+         nb.add(self.tab_modules, text="Modules")
+         nb.add(self.tab_audio, text="Audio")
+-        nb.add(self.tab_game, text="Game")
+         nb.pack(fill="both", expand=True)
+ 
+         self._build_modules_tab(self.tab_modules)
+         self._build_audio_tab(self.tab_audio)
+-        # Build the Game tab after modules and audio
+-        self._build_game_tab(self.tab_game)
+         try:
+             self.root.after(1500, self._right_panel_watchdog)
+         except Exception:
+@@ -2084,8 +2079,7 @@
+             ).pack(fill="x", padx=6, pady=(0, 4))
+             tk.Checkbutton(
+                 titan_card,
+-                # Shorten label for clarity
+-                text="Autonomous Ronin",
++                text="Autonomous Ronin (experimental)",
+                 variable=self.var_ronin_autonomy,
+                 command=self._toggle_ronin_autonomy,
+                 bg=theme.COLORS["bg"],
+@@ -2097,8 +2091,7 @@
+             ).pack(fill="x", padx=12, pady=(0, 2))
+             tk.Checkbutton(
+                 titan_card,
+-                # Shorten label for clarity
+-                text="Learning mode",
++                text="Learning mode (mirror my piloting)",
+                 variable=self.var_ronin_learning,
+                 command=self._toggle_ronin_learning,
+                 bg=theme.COLORS["bg"],
+@@ -2134,20 +2127,11 @@
+                 side="left", padx=4
+             )
+             self._make_hud_button(row_tf_state, "Browse…", self._select_titanfall_state).pack(side="left")
+-            # Add a row to apply or reload Titanfall paths when typing paths manually
+-            row_tf_apply = tk.Frame(titan_card, bg=theme.COLORS["bg"])
+-            row_tf_apply.pack(fill="x", padx=6, pady=2)
+-            # place the apply/reload button on the left so it doesn't clip
+-            self._make_hud_button(
+-                row_tf_apply,
+-                "Apply / Reload paths",
+-                self._apply_titanfall_paths,
+-            ).pack(side="left")
+             row_tf_voice = tk.Frame(titan_card, bg=theme.COLORS["bg"])
+             row_tf_voice.pack(fill="x", padx=6, pady=2)
+             tk.Label(
+                 row_tf_voice,
+-                text="Voice ID:",
++                text="Discord voice ID:",
+                 bg=theme.COLORS["bg"],
+                 fg=theme.COLORS["text"],
+                 font=(theme.get_font_family(), 9),
+@@ -2158,7 +2142,7 @@
+             row_tf_brief.pack(fill="x", padx=6, pady=2)
+             tk.Label(
+                 row_tf_brief,
+-                text="Brief ID:",
++                text="Briefing channel ID:",
+                 bg=theme.COLORS["bg"],
+                 fg=theme.COLORS["text"],
+                 font=(theme.get_font_family(), 9),
+@@ -2169,7 +2153,7 @@
+             row_tf_report.pack(fill="x", padx=6, pady=2)
+             tk.Label(
+                 row_tf_report,
+-                text="Report ID:",
++                text="Battle report ID:",
+                 bg=theme.COLORS["bg"],
+                 fg=theme.COLORS["text"],
+                 font=(theme.get_font_family(), 9),
+@@ -2180,7 +2164,7 @@
+             row_tf_idle.pack(fill="x", padx=6, pady=2)
+             tk.Label(
+                 row_tf_idle,
+-                text="Idle ID:",
++                text="Idle voice ID:",
+                 bg=theme.COLORS["bg"],
+                 fg=theme.COLORS["text"],
+                 font=(theme.get_font_family(), 9),
+@@ -2219,24 +2203,30 @@
+                 font=(theme.get_font_family(), 9),
+                 anchor="w",
+             ).pack(fill="x", padx=6, pady=(0, 2))
+-            # Stack voice join/leave buttons vertically to avoid horizontal clipping
+-            voice_btns = tk.Frame(titan_card, bg=theme.COLORS["bg"])
+-            voice_btns.pack(fill="x", padx=6, pady=(0, 4))
++            # Voice join/leave controls. Stack buttons vertically to avoid horizontal clipping in narrow panels.
++            voice_row_mission = tk.Frame(titan_card, bg=theme.COLORS["bg"])
++            voice_row_mission.pack(fill="x", padx=6, pady=(0, 2))
+             self._make_hud_button(
+-                voice_btns,
++                voice_row_mission,
+                 "Join Mission VC",
+                 lambda: self._manual_join_voice("mission"),
+-            ).pack(fill="x", pady=1)
++            ).pack(side="left")
++
++            voice_row_idle = tk.Frame(titan_card, bg=theme.COLORS["bg"])
++            voice_row_idle.pack(fill="x", padx=6, pady=(0, 2))
+             self._make_hud_button(
+-                voice_btns,
++                voice_row_idle,
+                 "Join Idle VC",
+                 lambda: self._manual_join_voice("idle"),
+-            ).pack(fill="x", pady=1)
++            ).pack(side="left")
++
++            voice_row_leave = tk.Frame(titan_card, bg=theme.COLORS["bg"])
++            voice_row_leave.pack(fill="x", padx=6, pady=(0, 4))
+             self._make_hud_button(
+-                voice_btns,
++                voice_row_leave,
+                 "Leave VC",
+                 self._manual_leave_voice,
+-            ).pack(fill="x", pady=1)
++            ).pack(side="left")
+             tk.Label(
+                 titan_card,
+                 textvariable=self.var_ronin_profile,
+@@ -2401,42 +2391,6 @@
+         self._build_local_voice_section(content)
+         self._build_listening_section(content)
+         self._build_discord_tools(content)
+-        # Gaming panel now lives in the Game tab; do not build it here
+-
+-    def _build_game_tab(self, parent):
+-        """Build the Game tab which contains only the gaming panel (Titanfall/stream status)."""
+-        # Configure the grid so the canvas expands
+-        parent.grid_rowconfigure(0, weight=1)
+-        parent.grid_columnconfigure(0, weight=1)
+-
+-        # Create a scrollable canvas similar to the audio tab
+-        canvas = tk.Canvas(parent, bg=theme.COLORS["bg"], highlightthickness=0, borderwidth=0)
+-        vbar = tk.Scrollbar(parent, orient="vertical", command=canvas.yview)
+-        canvas.configure(yscrollcommand=vbar.set)
+-        canvas.grid(row=0, column=0, sticky="nsew")
+-        vbar.grid(row=0, column=1, sticky="ns")
+-
+-        content = tk.Frame(canvas, bg=theme.COLORS["bg"], padx=10, pady=12)
+-        content_id = canvas.create_window((10, 10), window=content, anchor="nw")
+-        content.grid_columnconfigure(0, weight=1)
+-
+-        def _sync_scrollregion(_evt=None):
+-            try:
+-                canvas.configure(scrollregion=canvas.bbox("all"))
+-            except Exception:
+-                pass
+-
+-        def _sync_width(_evt=None):
+-            try:
+-                extra = vbar.winfo_width() if vbar.winfo_ismapped() else 0
+-                canvas.itemconfigure(content_id, width=max(0, canvas.winfo_width() - extra - 4))
+-            except Exception:
+-                pass
+-
+-        content.bind("<Configure>", _sync_scrollregion)
+-        canvas.bind("<Configure>", _sync_width)
+-
+-        # Only build the gaming panel here (Titanfall / stream controls)
+         self._build_gaming_panel(content)
+     def _build_tools_panel(self, parent):
+         parent.grid_rowconfigure(0, weight=1)
+@@ -3500,23 +3454,11 @@
+         if match_info.get("time_remaining"):
+             detail_parts.append(f"{match_info.get('time_remaining')} remaining")
+         detail_text = " • ".join(part for part in detail_parts if part)
+-        # If no specific detail text was assembled, show a default waiting message
+         if not detail_text:
+             detail_text = "Awaiting telemetry…"
+-        # Determine whether the user has configured any Titanfall paths
+-        try:
+-            has_paths = bool((self.var_titanfall_log.get() or "").strip() or (self.var_titanfall_state.get() or "").strip())
+-        except Exception:
+-            has_paths = False
+-        # When not connected, distinguish between idle (no paths) and waiting (paths configured but no data yet)
+         if not titan or not titan_connected:
+-            if has_paths:
+-                status_line = "Titanfall link waiting for data."
+-                detail_text = "Paths are configured; awaiting telemetry feed or log events."
+-            else:
+-                status_line = "Titanfall link idle."
+-                detail_text = "Select a log or telemetry file to begin."
+-        # Update the UI variables
++            status_line = "Titanfall link idle."
++            detail_text = "Select a log or telemetry file to begin."
+         self.var_titanfall_status.set(status_line)
+         self.var_titanfall_detail.set(detail_text)
+         mission_raw = (info.get("mission_state") or ("in_mission" if info.get("in_mission") else "offline")).strip()
+@@ -3708,44 +3650,6 @@
+             self._persist_env("TITANFALL2_TELEMETRY_FILE", path)
+         except Exception:
+             pass
+-
+-    def _apply_titanfall_paths(self):
+-        """Apply the currently entered Titanfall log and telemetry paths.
+-
+-        When the user manually types or pastes paths into the fields, this
+-        helper can be invoked to notify the gaming bridge and persist the
+-        values. It will also refresh the status display so the UI reflects
+-        whether data is being received.
+-        """
+-        try:
+-            log_path = (self.var_titanfall_log.get() or "").strip()
+-            state_path = (self.var_titanfall_state.get() or "").strip()
+-            kwargs: dict[str, str | None] = {}
+-            if log_path:
+-                kwargs["log_path"] = log_path
+-            if state_path:
+-                kwargs["telemetry_path"] = state_path
+-            if kwargs:
+-                try:
+-                    gaming_bridge.configure_titanfall(**kwargs)
+-                except Exception as exc:
+-                    self.safe_log(f"Unable to apply Titanfall paths: {exc}", "#ff7777")
+-                # persist to environment so the next launch remembers the paths
+-                try:
+-                    if log_path:
+-                        self._persist_env("TITANFALL2_LOG_PATH", log_path)
+-                    if state_path:
+-                        self._persist_env("TITANFALL2_TELEMETRY_FILE", state_path)
+-                except Exception:
+-                    pass
+-                self.safe_log("Titanfall paths applied.", "#ffae6b")
+-            # refresh status so the UI updates immediately
+-            try:
+-                self._refresh_gaming_status(reschedule=False)
+-            except Exception:
+-                pass
+-        except Exception as exc:
+-            self.safe_log(f"Apply Titanfall paths error: {exc}", "#ff7777")
+ 
+     def _save_titanfall_callsign(self):
+         callsign = (self.var_titanfall_callsign.get() or "Bjorgsun-26").strip() or "Bjorgsun-26"
+@@ -6324,16 +6228,8 @@
+         btn = tk.Canvas(parent, width=w, height=bh, bg=theme.COLORS["bg"], highlightthickness=0, cursor="hand2")
+         def draw(state="normal"):
+             btn.delete("all")
+-            # Colours tuned to the HUD palette: deep purples with neon outlines
+-            if state == "normal":
+-                fill = "#24004e"  # dark purple for normal state
+-                outline = "#120026"  # subtle outline when not hovered
+-            elif state == "hover":
+-                fill = "#2e006c"  # lighter purple on hover
+-                outline = theme.COLORS["accent"]  # bright accent outline on hover
+-            else:  # press state
+-                fill = "#1a003a"  # darkest purple when pressed
+-                outline = theme.COLORS["accent"]
++            fill = "#20313b" if state == "normal" else ("#2a4656" if state == "hover" else "#16303a")
++            outline = theme.COLORS["accent"] if state != "normal" else "#0f2026"
+             theme.round_rect(btn, 1, 1, w-1, bh-1, r=9, fill=fill, outline=outline)
+             btn.create_text(w//2, bh//2, text=text, fill="#e6f3ff", font=fnt)
+         def on_enter(_): draw("hover")

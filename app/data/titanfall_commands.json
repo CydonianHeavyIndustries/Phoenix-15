@@ -1,0 +1,36 @@
+{
+  "timestamp": 1763970930.6072876,
+  "callsign": "Bjorgsun-26",
+  "autopilot_enabled": false,
+  "orders": [],
+  "remember": true,
+  "context": {
+    "mission_state": "offline",
+    "titan": {
+      "chassis": "",
+      "loadout": "",
+      "core": "",
+      "status": "offline",
+      "health": 0,
+      "shield": 0,
+      "battery": 0,
+      "cooldown": 0.0,
+      "ready": false,
+      "core_ready": false
+    },
+    "match": {
+      "state": "idle",
+      "map": "",
+      "mode": "",
+      "server": "",
+      "playlist": "",
+      "team": "",
+      "players": 0,
+      "time_remaining": "",
+      "score": {
+        "friend": 0,
+        "foe": 0
+      }
+    }
+  }
+}

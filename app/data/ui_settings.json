@@ -1,0 +1,20 @@
+{
+  "audio": {
+    "systemSounds": true,
+    "voiceFeedback": true,
+    "volume": 75
+  },
+  "notifications": {
+    "systemAlerts": true,
+    "processWarnings": true,
+    "updateNotifications": false
+  },
+  "visual": {
+    "animationEffects": true,
+    "gridOverlay": false,
+    "opacity": 90
+  },
+  "performance": {
+    "processingMode": "BALANCED"
+  }
+}

@@ -1,0 +1,14 @@
+[Unit]
+Description=Phoenix-15 backend
+After=network.target phoenix-sync.service
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/phoenix/phoenix.env
+WorkingDirectory=/opt/phoenix/app
+ExecStart=/usr/local/bin/phoenix-backend.sh
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,6 @@
+Place game asset overrides under this folder.
+Keep the same internal path and file names as the original game assets.
+
+Example (path varies by game):
+- natives/x64/...
+- natives/STM/...

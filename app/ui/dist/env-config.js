@@ -1,0 +1,1 @@
+window.__BJ_CFG = {"user": "Father", "pass": "NeverKnowsBest"};

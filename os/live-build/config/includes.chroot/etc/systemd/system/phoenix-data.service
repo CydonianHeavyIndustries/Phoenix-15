@@ -1,0 +1,12 @@
+[Unit]
+Description=Mount Phoenix data partition
+After=local-fs.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/phoenix/phoenix.env
+ExecStart=/usr/local/bin/phoenix-mount-data.sh
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

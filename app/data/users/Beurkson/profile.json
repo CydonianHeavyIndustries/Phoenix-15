@@ -1,0 +1,35 @@
+{
+  "user": "Beurkson",
+  "facts": {
+    "appearance": [],
+    "location": [],
+    "preferences": [
+      "to see when i have the chance",
+      "it when youask more questions lol, don't hesitate, i know you're curious, its your nature, so ask away",
+      "to represent as kind of stereotypes without being that, but like",
+      "this"
+    ],
+    "notes": [],
+    "contacts": [],
+    "habits": []
+  },
+  "rules": [
+    "Names (first name or nickname) are okay; last names are not stored.",
+    "Street addresses, coordinates, postal codes, and IP addresses are never saved.",
+    "Only coarse locations (country/province or 'near <city>') are allowed.",
+    "Phone numbers and email addresses are allowed when voluntarily shared by the user."
+  ],
+  "created": "2025-11-09 08:03:49 UTC",
+  "updated": "2025-11-16 01:02:57 UTC",
+  "relationship": "Father",
+  "display_name": "Beurkson",
+  "interactions": 0,
+  "guardian": {
+    "incidents": 0,
+    "pending": false,
+    "pending_reason": "",
+    "pending_severity": "",
+    "pending_ts": "",
+    "forgiveness_used": 0
+  }
+}

@@ -1,0 +1,13 @@
+[Unit]
+Description=Phoenix update sync from PHX_DATA
+After=phoenix-data.service
+Before=phoenix-backend.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/phoenix/phoenix.env
+ExecStart=/usr/local/bin/phoenix-sync.sh
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

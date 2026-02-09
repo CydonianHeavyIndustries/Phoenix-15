@@ -1,0 +1,142 @@
+{}
+{
+  "need backup": {
+    "tag": "aggressive_push",
+    "count": 0
+  },
+  "with me": {
+    "tag": "aggressive_push",
+    "count": 0
+  },
+  "on me": {
+    "tag": "aggressive_push",
+    "count": 0
+  },
+  "push with me": {
+    "tag": "aggressive_push",
+    "count": 0
+  },
+  "enemy contact": {
+    "tag": "aggressive_push",
+    "count": 0
+  },
+  "hostiles on me": {
+    "tag": "aggressive_push",
+    "count": 0
+  },
+  "need you with me": {
+    "tag": "aggressive_push",
+    "count": 0
+  },
+  "move up": {
+    "tag": "aggressive_push",
+    "count": 0
+  },
+  "advance": {
+    "tag": "aggressive_push",
+    "count": 0
+  },
+  "watch your six": {
+    "tag": "defensive_block",
+    "count": 0
+  },
+  "watch your back": {
+    "tag": "defensive_block",
+    "count": 0
+  },
+  "cover me": {
+    "tag": "defensive_block",
+    "count": 0
+  },
+  "need cover": {
+    "tag": "defensive_block",
+    "count": 0
+  },
+  "fall back": {
+    "tag": "defensive_block",
+    "count": 0
+  },
+  "pull back": {
+    "tag": "defensive_block",
+    "count": 0
+  },
+  "hold position": {
+    "tag": "defensive_block",
+    "count": 0
+  },
+  "defend here": {
+    "tag": "defensive_block",
+    "count": 0
+  },
+  "hold this point": {
+    "tag": "defensive_block",
+    "count": 0
+  },
+  "behind me": {
+    "tag": "defensive_block",
+    "count": 0
+  },
+  "fallback granted": {
+    "tag": "fallback_yes",
+    "count": 0
+  },
+  "default control": {
+    "tag": "fallback_yes",
+    "count": 0
+  },
+  "give default control": {
+    "tag": "fallback_yes",
+    "count": 0
+  },
+  "you can fall back": {
+    "tag": "fallback_yes",
+    "count": 0
+  },
+  "hand it to default": {
+    "tag": "fallback_yes",
+    "count": 0
+  },
+  "use default ai": {
+    "tag": "fallback_yes",
+    "count": 0
+  },
+  "stand down": {
+    "tag": "fallback_yes",
+    "count": 0
+  },
+  "bjorgsun stand down": {
+    "tag": "fallback_yes",
+    "count": 0
+  },
+  "let default drive": {
+    "tag": "fallback_yes",
+    "count": 0
+  },
+  "resume control": {
+    "tag": "fallback_resume",
+    "count": 0
+  },
+  "take over again": {
+    "tag": "fallback_resume",
+    "count": 0
+  },
+  "back on you": {
+    "tag": "fallback_resume",
+    "count": 0
+  },
+  "i need you back": {
+    "tag": "fallback_resume",
+    "count": 0
+  },
+  "ronin resume control": {
+    "tag": "fallback_resume",
+    "count": 0
+  },
+  "bjorgsun resume control": {
+    "tag": "fallback_resume",
+    "count": 0
+  },
+  "take the controls": {
+    "tag": "fallback_resume",
+    "count": 0
+  }

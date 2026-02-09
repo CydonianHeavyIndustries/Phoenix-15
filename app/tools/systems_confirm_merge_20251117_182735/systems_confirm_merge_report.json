@@ -1,0 +1,239 @@
+{
+  "timestamp": "20251117_182735",
+  "items": [
+    {
+      "path": "__init__.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_other": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "audio.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "6da8b2a886d3f831d1fdeb48516eea3b0859b5b845b77d9f869a4ff8e5b4736f",
+      "hash_other": "6da8b2a886d3f831d1fdeb48516eea3b0859b5b845b77d9f869a4ff8e5b4736f",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "audio_sense.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "b4840f634764e87b963879646aa8d4946b0038d918aaeb05a298133f80c0f913",
+      "hash_other": "b4840f634764e87b963879646aa8d4946b0038d918aaeb05a298133f80c0f913",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "awareness.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "cb4a779ec9d7c04b7fa4bba3b16ab9edcb7df044f30d134da3f5a98e4b66eaa6",
+      "hash_other": "cb4a779ec9d7c04b7fa4bba3b16ab9edcb7df044f30d134da3f5a98e4b66eaa6",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "briefing.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "a2871f568e466e61de888849dfb475998c70c0b0b7e18c8d9dafb55e089cf2f8",
+      "hash_other": "a2871f568e466e61de888849dfb475998c70c0b0b7e18c8d9dafb55e089cf2f8",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "calm_shutdown.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "f339dfce75b3167336396373f7e6aadfa52ee9b90350da782a2ddd3163022019",
+      "hash_other": "f339dfce75b3167336396373f7e6aadfa52ee9b90350da782a2ddd3163022019",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "discord_bridge.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "29617f0c72c580f92e89ecac2aa1e646e431821b9a8681f271787f1c5071fe09",
+      "hash_other": "29617f0c72c580f92e89ecac2aa1e646e431821b9a8681f271787f1c5071fe09",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "dreams.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "9511a9341241c45744330c6570b0926cac6015c447b02f66ac905ad2dfe25da6",
+      "hash_other": "9511a9341241c45744330c6570b0926cac6015c447b02f66ac905ad2dfe25da6",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "dreamscreen.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "bf8736d2aa3f5276b4c30741e46936cf3b47a973a0a84cf82052c8259b8b6dab",
+      "hash_other": "bf8736d2aa3f5276b4c30741e46936cf3b47a973a0a84cf82052c8259b8b6dab",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "gaming_bridge.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "258423e32b6915627375eb38a5e9acf1cf1c792e80035a257112c5706cba74c5",
+      "hash_other": "258423e32b6915627375eb38a5e9acf1cf1c792e80035a257112c5706cba74c5",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "hibernation.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "ef4a1a0aa1e62f6b9a532696cadb1f80914bfb2eaf7c22b078bc2d85fb130cf8",
+      "hash_other": "ef4a1a0aa1e62f6b9a532696cadb1f80914bfb2eaf7c22b078bc2d85fb130cf8",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "hypershift.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "d63dad937f7a0551d16116f919abc95240603708ffc00cc1f80add66ee95b3e6",
+      "hash_other": "d63dad937f7a0551d16116f919abc95240603708ffc00cc1f80add66ee95b3e6",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "notify.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "b9c6a871a91ca1d587975424c11be6e8f0d61805caf80fec3776bdec94b5a067",
+      "hash_other": "b9c6a871a91ca1d587975424c11be6e8f0d61805caf80fec3776bdec94b5a067",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "overlay_web.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "c496000aeb83aa25e49a1496a6929395acbc44014c6c97897bfee069a4a3a221",
+      "hash_other": "c496000aeb83aa25e49a1496a6929395acbc44014c6c97897bfee069a4a3a221",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "reloader.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "681560fa2e23a58edb000760db91126f9ad2d970aeafdefa84249ef483d0c2a6",
+      "hash_other": "681560fa2e23a58edb000760db91126f9ad2d970aeafdefa84249ef483d0c2a6",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "ronin_ai.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "1a852f53ceab977e6adcb5cd42d5db1fcbd082f08afd0ab6a06ff245dfaf15ea",
+      "hash_other": "1a852f53ceab977e6adcb5cd42d5db1fcbd082f08afd0ab6a06ff245dfaf15ea",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "selfcheck.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "5935a485f2807c2dd23e7664006c690312aacc314df273d11c7bcd65d3dd5e4d",
+      "hash_other": "5935a485f2807c2dd23e7664006c690312aacc314df273d11c7bcd65d3dd5e4d",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "stories.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "30b68d5b8c926a11e675ed8db727b80b86f0f4c0b2c230eeb87c45ab1e856275",
+      "hash_other": "30b68d5b8c926a11e675ed8db727b80b86f0f4c0b2c230eeb87c45ab1e856275",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "stt.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "f817ae2f307329949da33b4e1b852b609895359b879cd8d2ef69eace0c0a9072",
+      "hash_other": "f817ae2f307329949da33b4e1b852b609895359b879cd8d2ef69eace0c0a9072",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "tasks.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "370fefe2893c0ad4f9f08ad08100e42c6a56edd6e13b31a4387daf0cfd54e750",
+      "hash_other": "370fefe2893c0ad4f9f08ad08100e42c6a56edd6e13b31a4387daf0cfd54e750",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "therapy.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "1d59115130133e74355ab55fa3e2438869f4aa1440b7c0e7f2b239c4f3bd1fff",
+      "hash_other": "1d59115130133e74355ab55fa3e2438869f4aa1440b7c0e7f2b239c4f3bd1fff",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "timekeeper.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "79867ff10b3764f03622208a2010a72b0508f26dbe76f180f4c567416fcd3cf6",
+      "hash_other": "79867ff10b3764f03622208a2010a72b0508f26dbe76f180f4c567416fcd3cf6",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "titanfall.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "fee608f6af2c78323f4cffe7b785f3f5e5f57f669f3d80fff94bb3b0003522df",
+      "hash_other": "fee608f6af2c78323f4cffe7b785f3f5e5f57f669f3d80fff94bb3b0003522df",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "vision.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "7d845bba000f9c00243cbd4e8c0f1a914af729d729eee60ecefb0049f4b7b3eb",
+      "hash_other": "7d845bba000f9c00243cbd4e8c0f1a914af729d729eee60ecefb0049f4b7b3eb",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "voicemeeter.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "2456ad53a32c6f47976010ae174440c69b9fe4095d1a7da231e18f99208207f1",
+      "hash_other": "2456ad53a32c6f47976010ae174440c69b9fe4095d1a7da231e18f99208207f1",
+      "decision": "identical",
+      "action": "none"
+    },
+    {
+      "path": "xsoverlay.py",
+      "in_canonical": true,
+      "in_other": true,
+      "hash_canonical": "52505675fad158c6fe1567fcbc91969fb5fbc0bacd62c91bdafbcfe41f72671f",
+      "hash_other": "52505675fad158c6fe1567fcbc91969fb5fbc0bacd62c91bdafbcfe41f72671f",
+      "decision": "identical",
+      "action": "none"
+    }
+  ]
+}

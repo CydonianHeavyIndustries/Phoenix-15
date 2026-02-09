@@ -1,0 +1,34 @@
+{
+  "user": "discord_489837147239743532",
+  "display_name": "Beurkson",
+  "facts": {
+    "contacts": [],
+    "habits": [],
+    "location": [],
+    "notes": [],
+    "preferences": [
+      "to see when i have the chance",
+      "it when youask more questions lol, don't hesitate, i know you're curious, its your nature, so ask away",
+      "to represent as kind of stereotypes without being that, but like"
+    ],
+    "appearance": []
+  },
+  "rules": [
+    "Names (first name or nickname) are okay; last names are not stored.",
+    "Street addresses, coordinates, postal codes, and IP addresses are never saved.",
+    "Only coarse locations (country/province or 'near <city>') are allowed.",
+    "Phone numbers and email addresses are allowed when voluntarily shared by the user."
+  ],
+  "relationship": "father",
+  "interactions": 46,
+  "guardian": {
+    "incidents": 0,
+    "pending": false,
+    "pending_reason": "",
+    "pending_severity": "",
+    "pending_ts": "",
+    "forgiveness_used": 0
+  },
+  "created": "2025-11-10 03:21:39 UTC",
+  "updated": "2025-11-16 03:59:06 UTC"
+}

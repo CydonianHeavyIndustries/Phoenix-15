@@ -1,0 +1,20 @@
+--- canonical/logs\vision_log.txt
++++ other/logs\vision_log.txt
+@@ -979,3 +979,17 @@
+ [2025-11-16 02:21:36] Vision shutdown requested.
+ [2025-11-16 02:21:37] Vision loop exiting.
+ [Sun Nov 16 02:21:52 2025] Vision passive heartbeat
++[Vision Log Initialized]
++[2025-11-16 02:43:28] Vision system initialized with semantic context tracking.
++[2025-11-16 02:43:28] Vision subsystem active with contextual awareness. Default state: OFF.
++[Sun Nov 16 02:43:54 2025] Vision passive heartbeat
++[Sun Nov 16 02:44:24 2025] Vision passive heartbeat
++[Sun Nov 16 02:44:54 2025] Vision passive heartbeat
++[Sun Nov 16 02:45:24 2025] Vision passive heartbeat
++[Sun Nov 16 02:45:54 2025] Vision passive heartbeat
++[Sun Nov 16 02:46:24 2025] Vision passive heartbeat
++[Sun Nov 16 02:46:54 2025] Vision passive heartbeat
++[Sun Nov 16 02:47:24 2025] Vision passive heartbeat
++[Sun Nov 16 02:47:54 2025] Vision passive heartbeat
++[2025-11-16 02:48:01] Vision shutdown requested.
++[2025-11-16 02:48:03] Vision loop exiting.

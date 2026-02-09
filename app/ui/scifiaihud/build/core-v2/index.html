@@ -1,0 +1,931 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bjorgsun-26 Core v2</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="/env-config.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <header id="top-bar" class="pywebview-drag-region">
+        <div class="brand">
+          <span class="brand-mark">BJORG</span>
+          <span class="brand-sep">/</span>
+          <span class="brand-mark">SUN-26</span>
+          <span class="brand-sub">CORE v2</span>
+          <span class="brand-ai" id="brand-ai"></span>
+        </div>
+        <div class="top-status">
+          <span class="status-pill" id="backend-pill">Backend: ...</span>
+          <span class="status-pill" id="ollama-pill">Ollama: ...</span>
+          <span class="status-pill" id="memory-pill">Memory: ...</span>
+        </div>
+        <div class="top-controls">
+          <button class="icon-btn" id="btn-frequency" title="Frequency Hub">Frequency</button>
+          <select id="module-select" class="module-select" aria-label="Module selector">
+            <option value="core">Core</option>
+            <option value="audio">Audio Lab</option>
+            <option value="artificer">Artificer</option>
+            <option value="all">All Modules</option>
+          </select>
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn" id="btn-settings" title="Settings">Settings</button>
+          <button class="icon-btn" id="btn-customize" title="Customize UI">Customize UI</button>
+          <button class="icon-btn" id="btn-files" title="File Browser">Files</button>
+          <button class="icon-btn" id="btn-core-panels" title="Show core panels">Core Panels</button>
+          <button class="icon-btn" id="btn-minimize" title="Toggle panels">Panels</button>
+          <div class="window-controls">
+            <button class="window-btn" id="btn-window-min" title="Minimize window">-</button>
+            <button class="window-btn danger" id="btn-window-close" title="Close">X</button>
+          </div>
+        </div>
+      </header>
+
+      <main id="workspace">
+        <section id="orb-core" aria-label="Neural orb">
+          <canvas id="orb-canvas" width="420" height="420"></canvas>
+          <div class="orb-glow"></div>
+          <div class="orb-label" id="orb-label">DORMANT</div>
+          <div class="orb-sub" id="orb-sub">NEURAL CORE</div>
+          <div class="orb-heartbeat" id="orb-heart"></div>
+        </section>
+        <section id="orb-controls" aria-label="Orb controls">
+          <button class="btn primary" id="btn-wake">Wake Systems</button>
+          <button class="btn ghost" id="btn-sleep">Sleep Systems</button>
+          <button class="btn ghost" id="btn-exit">Exit</button>
+        </section>
+        <section id="orb-menu" class="orb-menu hidden" aria-label="Orb menu">
+          <div class="orb-menu-panel">
+            <div class="orb-menu-header">
+              <span>Core Menu</span>
+              <button class="icon-btn" id="orb-menu-close">X</button>
+            </div>
+            <label class="orb-menu-search">
+              Search
+              <input type="text" id="orb-menu-search" placeholder="Search modules, logs, actions..." />
+            </label>
+            <div class="orb-menu-results" id="orb-menu-results"></div>
+          </div>
+        </section>
+
+        <section class="panel floating" id="panel-controls" data-panel="controls" style="left: 4vw; top: 10vh; width: 260px;">
+          <div class="panel-header">System Control</div>
+          <div class="panel-body">
+            <button class="btn ghost" id="btn-selfcheck">Self-check</button>
+            <button class="btn ghost" id="btn-logs">Open Logs</button>
+            <button class="btn ghost" id="btn-memory-check">Memory Check</button>
+            <button class="btn ghost" id="btn-perf">Perf Stats</button>
+          </div>
+        </section>
+
+        <section class="panel floating" id="panel-chat" data-panel="chat" style="left: 4vw; top: 36vh; width: 32vw; height: 54vh;">
+          <div class="panel-header">Chat Interface</div>
+          <div class="panel-body panel-scroll" id="chat-log"></div>
+          <div class="panel-footer chat-footer">
+            <button class="btn ghost" id="chat-attach" title="Attach image">Image</button>
+            <span class="chat-attach-label" id="chat-attach-label">No image</span>
+            <input id="chat-image" type="file" accept="image/*" />
+            <input id="chat-input" type="text" placeholder="Enter command or message..." />
+            <button class="btn primary" id="chat-send">Send</button>
+          </div>
+        </section>
+
+        <section class="panel floating" id="panel-system" data-panel="system" style="left: 38vw; top: 16vh; width: 26vw; height: 34vh;">
+          <div class="panel-header">System Diagnostics</div>
+          <div class="panel-body">
+            <div class="diag-row"><span>CPU Load</span><span id="diag-cpu">--</span></div>
+            <div class="diag-row"><span>Memory</span><span id="diag-mem">--</span></div>
+            <div class="diag-row"><span>GPU Load</span><span id="diag-gpu">--</span></div>
+            <div class="diag-row"><span>Temp</span><span id="diag-temp">--</span></div>
+            <div class="diag-row"><span>Uptime</span><span id="diag-uptime">--</span></div>
+            <div class="diag-row"><span>Processes</span><span id="diag-proc">--</span></div>
+            <div class="diag-row"><span>Network</span><span id="diag-net">--</span></div>
+          </div>
+        </section>
+
+        <section class="panel floating" id="panel-perf" data-panel="perf" style="left: 10vw; top: 52vh; width: 36vw; height: 40vh; display: none;">
+          <div class="panel-header">Performance Tracker</div>
+          <div class="panel-body panel-scroll">
+            <div class="perf-actions">
+              <button class="btn ghost" id="perf-refresh">Refresh</button>
+              <button class="btn ghost" id="perf-copy">Copy</button>
+            </div>
+            <pre class="perf-report" id="perf-report">Awaiting snapshot...</pre>
+          </div>
+        </section>
+
+        <section class="panel floating" id="panel-frequency" data-panel="frequency" style="left: 66vw; top: 18vh; width: 30vw; height: 50vh;">
+          <div class="panel-header">Frequency Hub</div>
+          <div class="panel-body">
+            <div class="freq-orb" id="freq-orb">
+              <canvas id="freq-spectrum" width="520" height="160"></canvas>
+              <div class="freq-summary" id="freq-summary">
+                <div class="freq-row"><span>Main</span><span id="freq-main">--</span></div>
+                <div class="freq-row"><span>Lowest</span><span id="freq-low">--</span></div>
+                <div class="freq-row"><span>Highest</span><span id="freq-high">--</span></div>
+                <div class="freq-row"><span>Centroid</span><span id="freq-centroid">--</span></div>
+                <div class="freq-row"><span>Rolloff</span><span id="freq-rolloff">--</span></div>
+                <div class="freq-row"><span>Duration</span><span id="freq-duration">--</span></div>
+                <div class="freq-row"><span>Sample rate</span><span id="freq-sr">--</span></div>
+                <div class="freq-row"><span>Emotion</span><span id="freq-emotion-suggest">--</span></div>
+              </div>
+            </div>
+            <div class="freq-peaks" id="freq-peaks"></div>
+            <div class="field-grid">
+              <label>
+                Import audio
+                <input type="file" id="freq-import" accept="audio/*" />
+              </label>
+              <label>
+                Tag frequency (Hz)
+                <input type="number" id="freq-tag" placeholder="293" />
+              </label>
+              <label>
+                Emotion tag
+                <input type="text" id="freq-emotion" placeholder="Calm / Flow" />
+              </label>
+            </div>
+            <button class="btn ghost" id="freq-analyze">Analyze</button>
+          </div>
+        </section>
+
+          <section class="panel floating" id="panel-orb-tools" data-panel="orbtools" style="left: 38vw; top: 54vh; width: 26vw; height: 26vh;">
+            <div class="panel-header">Orb Output</div>
+            <div class="panel-body">
+              <div class="orb-state-line" id="orb-state-line">State: Dormant</div>
+              <div class="orb-state-line" id="orb-thoughts">Thought stream: idle</div>
+              <div class="orb-state-line" id="orb-emotion-line">Emotion: Unknown</div>
+              <div class="orb-state-line" id="orb-frequency-line">Frequency: --</div>
+              <div class="orb-state-line" id="orb-audio">Voice: muted</div>
+              <div class="orb-state-line" id="orb-heartbeat-status">Heartbeat: standby</div>
+            </div>
+          </section>
+
+          <section class="panel floating" id="panel-emotion" data-panel="emotion" style="left: 18vw; top: 14vh; width: 30vw; height: 36vh; display: none;">
+            <div class="panel-header">Emotion Feedback</div>
+            <div class="panel-body emotion-panel">
+              <div class="emotion-row"><span>Frequency</span><span id="emotion-frequency">--</span></div>
+              <div class="emotion-row"><span>Heartbeat</span><span id="emotion-heartbeat">--</span></div>
+              <div class="emotion-row"><span>State</span><span id="emotion-state">--</span></div>
+              <div class="emotion-row"><span>Band</span><span id="emotion-band">--</span></div>
+              <div class="emotion-context" id="emotion-context">Awaiting context...</div>
+              <label class="emotion-label">
+                Emotion label
+                <input type="text" id="emotion-input" placeholder="Describe the feeling..." />
+              </label>
+              <div class="emotion-actions">
+                <button class="btn primary" id="emotion-save">Save</button>
+                <button class="btn ghost" id="emotion-skip">Later</button>
+                <button class="btn ghost" id="emotion-close">Close</button>
+              </div>
+            </div>
+          </section>
+
+        <section class="panel floating" id="panel-audio" data-panel="audio" style="left: 62vw; top: 46vh; width: 34vw; height: 50vh;">
+          <div class="panel-header">Audio Lab</div>
+          <div class="panel-body panel-scroll">
+            <div class="audio-section">
+              <div class="audio-section-title">Device Routing</div>
+              <div class="audio-row">
+                <label for="audio-input">Input</label>
+                <select id="audio-input"></select>
+              </div>
+              <div class="audio-row">
+                <label for="audio-output">Output</label>
+                <select id="audio-output"></select>
+              </div>
+              <div class="audio-actions">
+                <button class="btn ghost" id="audio-refresh">Refresh devices</button>
+                <button class="btn ghost" id="audio-apply">Apply</button>
+              </div>
+            </div>
+
+            <div class="audio-section">
+              <div class="audio-section-title">System Mix</div>
+              <div class="audio-row">
+                <label for="audio-master-volume">Master</label>
+                <div class="audio-inline">
+                  <input type="range" id="audio-master-volume" min="0" max="100" value="70" />
+                  <span id="audio-master-value">70%</span>
+                </div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="audio-master-mute" />
+                <span>Mute master output</span>
+              </label>
+              <div class="audio-session-list" id="audio-session-list"></div>
+            </div>
+
+            <div class="audio-section">
+              <div class="audio-section-title">Media Player</div>
+              <div class="audio-row">
+                <label for="audio-media-source">Source</label>
+                <select id="audio-media-source">
+                  <option value="spotify">Spotify</option>
+                  <option value="none">Off</option>
+                </select>
+              </div>
+              <div class="audio-media-status" id="spotify-status">Spotify: disconnected</div>
+              <div class="audio-actions">
+                <button class="btn ghost" id="spotify-connect">Connect</button>
+                <button class="btn ghost" id="spotify-disconnect">Disconnect</button>
+              </div>
+              <div class="audio-media-track" id="spotify-track">No active playback.</div>
+              <div class="audio-media-buttons">
+                <button class="btn ghost" id="spotify-prev">Prev</button>
+                <button class="btn ghost" id="spotify-play">Play</button>
+                <button class="btn ghost" id="spotify-pause">Pause</button>
+                <button class="btn ghost" id="spotify-next">Next</button>
+              </div>
+              <div class="audio-row">
+                <label for="spotify-device">Device</label>
+                <select id="spotify-device"></select>
+              </div>
+              <div class="audio-actions">
+                <button class="btn ghost" id="spotify-transfer">Transfer</button>
+              </div>
+              <label>
+                Spotify Volume
+                <input type="range" id="spotify-volume" min="0" max="100" value="50" />
+              </label>
+              <label class="toggle">
+                <input type="checkbox" id="spotify-shuffle" />
+                <span>Shuffle</span>
+              </label>
+              <div class="audio-row">
+                <label for="spotify-repeat">Repeat</label>
+                <select id="spotify-repeat">
+                  <option value="off">Off</option>
+                  <option value="context">Context</option>
+                  <option value="track">Track</option>
+                </select>
+              </div>
+              <label>
+                Spotify URL or URI
+                <input type="text" id="audio-spotify-url" placeholder="https://open.spotify.com/playlist/..." />
+              </label>
+              <div class="audio-actions">
+                <button class="btn ghost" id="audio-spotify-load">Load</button>
+                <button class="btn ghost" id="audio-spotify-play">Play URL</button>
+                <button class="btn ghost" id="audio-spotify-clear">Clear</button>
+              </div>
+              <div class="audio-media-frame" id="audio-media-frame">
+                <div class="audio-media-empty" id="audio-media-empty">
+                  Paste a Spotify link to load the player.
+                </div>
+                <iframe
+                  id="audio-spotify-embed"
+                  title="Spotify player"
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  loading="lazy"
+                ></iframe>
+              </div>
+            </div>
+
+            <div class="audio-section">
+              <div class="audio-section-title">Profiles</div>
+              <div class="audio-row">
+                <label for="audio-profile-select">Active</label>
+                <select id="audio-profile-select"></select>
+              </div>
+              <div class="audio-actions">
+                <button class="btn ghost" id="audio-profile-apply">Apply profile</button>
+                <button class="btn ghost" id="audio-profile-save">Save profile</button>
+              </div>
+              <input type="text" id="audio-profile-name" placeholder="Profile name" />
+            </div>
+
+            <div class="audio-section">
+              <div class="audio-section-title">Audio Profile Lab</div>
+              <div class="audio-profile-status" id="audio-profile-status">Audio profile ready.</div>
+              <div class="audio-exam-banner">
+                <div class="audio-exam-prompt" id="audio-exam-prompt">Ready for exam.</div>
+                <div class="audio-exam-status" id="audio-exam-status">Not run yet.</div>
+                <div class="audio-actions">
+                  <button class="btn ghost" id="audio-exam-start">Start full exam</button>
+                  <button class="btn ghost" id="audio-exam-stop">Stop exam</button>
+                </div>
+              </div>
+              <div class="audio-profile-grid hidden" id="audio-exam-steps">
+                <div class="audio-profile-step">
+                  <div class="audio-section-subtitle">Hearing Test</div>
+                  <div class="audio-row">
+                    <label for="audio-hearing-target">Target</label>
+                    <select id="audio-hearing-target">
+                      <option value="output">Output</option>
+                      <option value="input">Input</option>
+                    </select>
+                  </div>
+                  <div class="audio-hearing-status" id="audio-hearing-status">Idle.</div>
+                  <div class="audio-actions">
+                    <button class="btn ghost" id="audio-hearing-start">Start</button>
+                    <button class="btn ghost" id="audio-hearing-repeat">Repeat</button>
+                    <button class="btn ghost" id="audio-hearing-stop">Stop</button>
+                  </div>
+                  <div class="audio-actions">
+                    <button class="btn ghost" id="audio-hearing-yes">Yes</button>
+                    <button class="btn ghost" id="audio-hearing-no">No</button>
+                    <button class="btn ghost" id="audio-hearing-pleasant">Pleasant</button>
+                    <button class="btn ghost" id="audio-hearing-neutral">Neutral</button>
+                    <button class="btn ghost" id="audio-hearing-unpleasant">Harsh</button>
+                  </div>
+                </div>
+                <div class="audio-profile-step">
+                  <div class="audio-section-subtitle">Speech Test</div>
+                  <div class="audio-speech-status" id="audio-speech-status">Idle.</div>
+                  <div class="audio-actions">
+                    <button class="btn ghost" id="audio-speech-start">Start</button>
+                    <button class="btn ghost" id="audio-speech-play">Replay phrase</button>
+                  </div>
+                  <label>
+                    Type what you heard
+                    <input type="text" id="audio-speech-input" placeholder="Type the phrase or digits..." />
+                  </label>
+                  <div class="audio-actions">
+                    <button class="btn ghost" id="audio-speech-submit">Submit</button>
+                    <button class="btn ghost" id="audio-speech-record">Record repeat</button>
+                  </div>
+                </div>
+              </div>
+              <div class="audio-profile-grid">
+                <div class="audio-profile-step">
+                  <div class="audio-section-subtitle">Voice Calibration</div>
+                  <label>
+                    Duration (sec)
+                    <input type="number" id="audio-voice-duration" min="1" max="8" step="0.5" value="3" />
+                  </label>
+                  <div class="audio-actions">
+                    <button class="btn ghost" id="audio-voice-calibrate">Record + Analyze</button>
+                  </div>
+                  <div class="audio-metrics">
+                    <span>RMS: <strong id="audio-voice-rms">--</strong></span>
+                    <span>Peak: <strong id="audio-voice-peak">--</strong></span>
+                  </div>
+                </div>
+              </div>
+              <div class="audio-section-subtitle">Preferences</div>
+              <div class="audio-profile-prefs">
+                <label class="audio-pref">
+                  <span>Warmth</span>
+                  <input type="range" id="audio-pref-warmth" min="-10" max="10" step="1" value="0" />
+                  <span class="audio-pref-value" id="audio-pref-warmth-value">0</span>
+                </label>
+                <label class="audio-pref">
+                  <span>Clarity</span>
+                  <input type="range" id="audio-pref-clarity" min="-10" max="10" step="1" value="0" />
+                  <span class="audio-pref-value" id="audio-pref-clarity-value">0</span>
+                </label>
+                <label class="audio-pref">
+                  <span>Air</span>
+                  <input type="range" id="audio-pref-air" min="-10" max="10" step="1" value="0" />
+                  <span class="audio-pref-value" id="audio-pref-air-value">0</span>
+                </label>
+                <label class="audio-pref">
+                  <span>Bass</span>
+                  <input type="range" id="audio-pref-bass" min="-10" max="10" step="1" value="0" />
+                  <span class="audio-pref-value" id="audio-pref-bass-value">0</span>
+                </label>
+              </div>
+              <div class="audio-actions">
+                <button class="btn ghost" id="audio-profile-apply-output">Apply output EQ</button>
+                <button class="btn ghost" id="audio-profile-apply-input">Apply input EQ</button>
+                <button class="btn ghost" id="audio-profile-save-lab">Save auto profile</button>
+              </div>
+              <div class="audio-profile-hint" id="audio-profile-hint">
+                Run the full exam (tones + speech) plus voice calibration for the full profile.
+              </div>
+            </div>
+
+            <div class="audio-section">
+              <div class="audio-section-title">Equalizer</div>
+              <div class="audio-row">
+                <label for="audio-eq-target">Target</label>
+                <select id="audio-eq-target">
+                  <option value="output">Output</option>
+                  <option value="input">Input</option>
+                </select>
+              </div>
+              <div class="audio-eq-list" id="audio-eq-list"></div>
+              <label>
+                Equalizer APO config
+                <input
+                  type="text"
+                  id="audio-eq-config-path"
+                  placeholder="C:\\Program Files\\EqualizerAPO\\config\\config.txt"
+                />
+              </label>
+              <div class="audio-actions">
+                <button class="btn ghost" id="audio-eq-flat">Reset flat</button>
+                <button class="btn ghost" id="audio-eq-apply">Apply to system EQ</button>
+              </div>
+              <div class="audio-eq-status" id="audio-eq-status">EQ Engine: ...</div>
+              <div class="audio-eq-status" id="audio-eq-status-detail"></div>
+            </div>
+
+            <div class="audio-section">
+              <div class="audio-section-title">Voice + Alerts</div>
+              <label class="toggle">
+                <input type="checkbox" id="setting-system-sounds" />
+                <span>System Sounds</span>
+              </label>
+              <label class="toggle">
+                <input type="checkbox" id="setting-voice-feedback" />
+                <span>Voice Feedback</span>
+              </label>
+              <label class="toggle">
+                <input type="checkbox" id="setting-reply-chime" />
+                <span>Reply chime when text-only</span>
+              </label>
+              <label>
+                Volume Level
+                <input type="range" id="setting-volume" min="0" max="100" value="70" />
+              </label>
+              <label>
+                Chime Volume
+                <input type="range" id="setting-chime" min="0" max="100" value="35" />
+              </label>
+              <label class="toggle">
+                <input type="checkbox" id="setting-hush" />
+                <span>Hush mode (mute alerts)</span>
+              </label>
+              <label class="toggle">
+                <input type="checkbox" id="setting-system-alerts" />
+                <span>System Alerts</span>
+              </label>
+              <label class="toggle">
+                <input type="checkbox" id="setting-process-warnings" />
+                <span>Process Warnings</span>
+              </label>
+              <label class="toggle">
+                <input type="checkbox" id="setting-update-notices" />
+                <span>Update Notices</span>
+              </label>
+              <label>
+                TTS Voice
+                <select id="setting-voice">
+                  <option value="en-US-JennyNeural">Jenny (androgynous)</option>
+                  <option value="en-US-AvaNeural">Ava</option>
+                  <option value="en-US-AriaNeural">Aria</option>
+                  <option value="en-GB-SoniaNeural">Sonia</option>
+                </select>
+              </label>
+              <label>
+                TTS Rate
+                <input type="text" id="setting-rate" value="-5%" />
+              </label>
+              <label>
+                TTS Pitch
+                <input type="text" id="setting-pitch" value="+2%" />
+              </label>
+            </div>
+
+            <div class="audio-section">
+              <div class="audio-section-title">Tone + Meters</div>
+              <div class="audio-actions">
+                <button class="btn ghost" id="audio-tone">Play 440 Hz</button>
+                <button class="btn ghost" id="audio-sweep">Sweep</button>
+                <button class="btn ghost" id="audio-stop">Stop</button>
+              </div>
+              <div class="audio-metrics">
+                <span>RMS: <strong id="audio-rms">--</strong></span>
+                <span>Peak: <strong id="audio-peak">--</strong></span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel floating" id="panel-artificer" data-panel="artificer" style="left: 12vw; top: 64vh; width: 26vw;">
+          <div class="panel-header">Artificer</div>
+          <div class="panel-body">
+            <div class="login-hint">Scaffolding only. This module is reserved for invention workflows.</div>
+            <div class="settings-actions split">
+              <button class="btn ghost" id="artificer-start">Start concept</button>
+            </div>
+            <div class="login-hint">More tools will unlock here soon.</div>
+          </div>
+        </section>
+
+        <section id="prompt-stack"></section>
+        <section id="toast-stack"></section>
+      </main>
+
+      <section id="settings-panel" class="panel overlay hidden">
+        <div class="panel-header">
+          System Configuration
+          <button class="icon-btn" id="settings-close">X</button>
+        </div>
+        <div class="panel-body panel-scroll">
+          <div class="settings-tabs" role="tablist" aria-label="Settings tabs">
+            <button class="settings-tab-btn active" data-tab="panels" type="button">Panels</button>
+            <button class="settings-tab-btn" data-tab="displays" type="button">Displays</button>
+            <button class="settings-tab-btn" data-tab="users" type="button">Users &amp; Access</button>
+            <button class="settings-tab-btn" data-tab="usb" type="button">USB Setup</button>
+            <button class="settings-tab-btn" data-tab="remote" type="button">Remote Access</button>
+          </div>
+
+          <div class="settings-tab-content">
+            <div class="settings-tab active" data-tab="panels">
+              <div class="section">
+                <h3>Panels</h3>
+                <label class="toggle">
+                  <input type="checkbox" id="setting-show-chat" />
+                  <span>Chat Interface</span>
+                </label>
+                <label class="toggle">
+                  <input type="checkbox" id="setting-show-system" />
+                  <span>System Diagnostics</span>
+                </label>
+                <label class="toggle">
+                  <input type="checkbox" id="setting-show-perf" />
+                  <span>Performance Tracker</span>
+                </label>
+                <label class="toggle">
+                  <input type="checkbox" id="setting-show-frequency" />
+                  <span>Frequency Hub</span>
+                </label>
+                <label class="toggle">
+                  <input type="checkbox" id="setting-show-orbtools" />
+                  <span>Orb Output</span>
+                </label>
+                <label class="toggle">
+                  <input type="checkbox" id="setting-show-audio" />
+                  <span>Audio Lab</span>
+                </label>
+                <label class="toggle">
+                  <input type="checkbox" id="setting-emotion-prompts" />
+                  <span>Emotion prompts</span>
+                </label>
+                <label class="toggle">
+                  <input type="checkbox" id="setting-performance-focus" />
+                  <span>Performance focus mode</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="settings-tab" data-tab="displays">
+              <div class="section">
+                <h3>Desktop View</h3>
+                <label class="toggle">
+                  <input type="checkbox" id="setting-desktop-view" />
+                  <span>Enable desktop view across monitors</span>
+                </label>
+                <div class="settings-actions split">
+                  <button class="btn ghost" id="display-refresh">Refresh monitors</button>
+                </div>
+                <div class="monitor-grid" id="display-list"></div>
+                <div class="login-hint" id="display-status">Loading display layout...</div>
+                <div class="login-hint">Relaunch UI after changing monitor layout.</div>
+              </div>
+            </div>
+
+            <div class="settings-tab" data-tab="users">
+              <div class="section">
+                <h3>Current User</h3>
+                <div class="user-info-grid">
+                  <div class="user-info">
+                    <span>Username</span>
+                    <strong id="current-user-name">Phoenix</strong>
+                  </div>
+                  <div class="user-info">
+                    <span>AI name</span>
+                    <strong id="current-user-ai">Bjorgsun-26</strong>
+                  </div>
+                  <div class="user-info">
+                    <span>User ID</span>
+                    <strong id="current-user-id">phoenix</strong>
+                  </div>
+                  <div class="user-info">
+                    <span>Created</span>
+                    <strong id="current-user-created">-</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section">
+                <h3>Access</h3>
+                <label class="toggle">
+                  <input type="checkbox" id="setting-login-enabled" />
+                  <span>Require login screen</span>
+                </label>
+                <label>
+                  Username
+                  <input type="text" id="setting-login-user" placeholder="Phoenix" />
+                </label>
+                <label>
+                  AI name
+                  <input type="text" id="setting-ai-name" placeholder="Bjorgsun-26" />
+                </label>
+                <label>
+                  Access password
+                  <input type="password" id="setting-login-pass" placeholder="12345" />
+                </label>
+              </div>
+
+              <div class="section">
+                <h3>Users</h3>
+                <div class="field-grid">
+                  <label>
+                    Active user
+                    <select id="setting-active-user"></select>
+                  </label>
+                </div>
+                <div class="settings-actions split">
+                  <button class="btn ghost" id="new-user-open">Create new user</button>
+                </div>
+              </div>
+
+              <div class="settings-modal hidden" id="new-user-modal" role="dialog" aria-label="Create user">
+                <div class="settings-modal-card">
+                  <div class="settings-modal-header">
+                    Create user
+                    <button class="icon-btn" id="new-user-close">X</button>
+                  </div>
+                  <div class="settings-modal-body">
+                    <div class="field-grid">
+                      <label>
+                        New username
+                        <input type="text" id="new-user-name" placeholder="Phoenix" />
+                      </label>
+                      <label>
+                        New password
+                        <input type="password" id="new-user-pass" placeholder="12345" />
+                      </label>
+                      <label>
+                        New AI name
+                        <input type="text" id="new-user-ai" placeholder="Bjorgsun-26" />
+                      </label>
+                    </div>
+                    <div class="settings-actions split">
+                      <button class="btn ghost" id="new-user-cancel">Cancel</button>
+                      <button class="btn primary" id="new-user-create">Create user (admin)</button>
+                    </div>
+                    <div class="login-hint" id="new-user-status">Admin key required (DEV_ACCESS_KEY).</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-tab" data-tab="usb">
+              <div class="section">
+                <h3>USB Setup Wizard</h3>
+                <div class="field-grid">
+                  <label>
+                    Target USB drive
+                    <select id="usb-drive-select"></select>
+                  </label>
+                </div>
+                <div class="field-grid">
+                  <label>
+                    Copy preset
+                    <select id="usb-copy-preset">
+                      <option value="full">Full echo (app + data)</option>
+                      <option value="ai-memory">AI memory only</option>
+                      <option value="user-data">User data only</option>
+                      <option value="custom">Custom</option>
+                    </select>
+                  </label>
+                </div>
+                <label class="toggle">
+                  <input type="checkbox" id="usb-include-os" />
+                  <span>Include Phoenix OS image (if present)</span>
+                </label>
+                <div class="field-grid">
+                  <label class="toggle">
+                    <input type="checkbox" id="usb-include-app" />
+                    <span>Include Phoenix-15 app</span>
+                  </label>
+                  <label class="toggle">
+                    <input type="checkbox" id="usb-include-memory" />
+                    <span>Include AI memory</span>
+                  </label>
+                  <label class="toggle">
+                    <input type="checkbox" id="usb-include-user" />
+                    <span>Include user data</span>
+                  </label>
+                </div>
+                <div class="login-hint">Selections are stored per user and used for USB copy profiles.</div>
+                <div class="settings-actions split">
+                  <button class="btn ghost" id="usb-drive-refresh">Refresh</button>
+                  <button class="btn ghost" id="usb-open">Open Drive</button>
+                  <button class="btn primary" id="usb-copy">Copy Project to USB</button>
+                </div>
+                <div class="field-grid">
+                  <label class="toggle">
+                    <input type="checkbox" id="setting-usb-local-boot" />
+                    <span>Prefer local install when USB launches</span>
+                  </label>
+                  <label>
+                    Local install path
+                    <input type="text" id="setting-usb-local-path" placeholder="Local install path" />
+                  </label>
+                </div>
+                <div class="settings-actions split">
+                  <button class="btn ghost" id="usb-local-open">Open Local Path</button>
+                  <button class="btn ghost" id="usb-sync">Manual Sync USB</button>
+                </div>
+                <div class="login-hint">USB sync is manual only.</div>
+                <div class="login-hint" id="usb-sync-status">Sync idle.</div>
+                <div class="login-hint" id="usb-status">Select a removable drive and start the wizard.</div>
+              </div>
+            </div>
+
+            <div class="settings-tab" data-tab="remote">
+              <div class="section">
+                <h3>Remote Access</h3>
+                <label class="toggle">
+                  <input type="checkbox" id="setting-remote-enabled" />
+                  <span>Enable remote web access</span>
+                </label>
+                <label>
+                  Public host (alias)
+                  <input type="text" id="setting-remote-host" placeholder="CHII.inc" />
+                </label>
+                <div class="settings-actions split">
+                  <button class="btn ghost" id="remote-refresh">Refresh Links</button>
+                  <button class="btn ghost" id="remote-open">Open Remote UI</button>
+                </div>
+                <div class="login-hint" id="remote-status">Remote access is off.</div>
+                <div class="login-hint" id="remote-links"></div>
+                <label class="toggle">
+                  <input type="checkbox" id="setting-remote-tunnel" />
+                  <span>Enable one-click tunnel</span>
+                </label>
+                <div class="settings-actions split">
+                  <button class="btn ghost" id="remote-tunnel-start">Start Tunnel</button>
+                  <button class="btn ghost" id="remote-tunnel-stop">Stop Tunnel</button>
+                </div>
+                <div class="login-hint" id="remote-tunnel-status">Tunnel idle.</div>
+                <div class="login-hint" id="remote-tunnel-link"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section settings-actions">
+            <button class="btn primary" id="settings-apply">Save + Apply</button>
+          </div>
+          <div class="section settings-actions">
+            <button class="btn ghost" id="settings-relaunch">Relaunch Project</button>
+          </div>
+          <div class="section settings-actions">
+            <button class="btn ghost" id="settings-reboot">Reboot Project</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="customize-panel" class="panel overlay hidden">
+        <div class="panel-header">
+          Customize UI
+          <button class="icon-btn" id="customize-close">X</button>
+        </div>
+        <div class="panel-body panel-scroll">
+          <div class="section">
+            <h3>Color Wheel</h3>
+            <div class="color-wheel-row">
+              <label>
+                Target
+                <select id="theme-wheel-target" aria-label="Theme color target">
+                  <option value="bg">Background</option>
+                  <option value="panel">Panel</option>
+                  <option value="panelBorder">Panel Border</option>
+                  <option value="accent">Accent</option>
+                  <option value="accentStrong">Accent Strong</option>
+                  <option value="accentSoft">Accent Soft</option>
+                  <option value="text">Text</option>
+                  <option value="muted">Muted Text</option>
+                </select>
+              </label>
+              <div class="color-wheel-picker">
+                <input type="color" id="theme-wheel-picker" value="#3ef2e0" aria-label="Theme color wheel" />
+                <input type="text" id="theme-wheel-hex" value="#3ef2e0" readonly />
+              </div>
+            </div>
+            <div class="login-hint">Pick a color to update the selected theme field.</div>
+          </div>
+          <div class="section">
+            <h3>Theme Configuration</h3>
+            <div class="field-grid theme-grid">
+              <label class="color-field">
+                Background
+                <div class="color-inputs">
+                  <input type="text" id="setting-theme-bg" placeholder="#070c14" />
+                  <input type="color" id="setting-theme-bg-color" value="#070c14" aria-label="Background color" />
+                </div>
+              </label>
+              <label class="color-field">
+                Panel
+                <div class="color-inputs">
+                  <input type="text" id="setting-theme-panel" placeholder="rgba(9, 22, 34, 0.86)" />
+                  <input type="color" id="setting-theme-panel-color" value="#091622" aria-label="Panel color" />
+                </div>
+              </label>
+              <label class="color-field">
+                Panel Border
+                <div class="color-inputs">
+                  <input type="text" id="setting-theme-panel-border" placeholder="rgba(66, 244, 255, 0.35)" />
+                  <input type="color" id="setting-theme-panel-border-color" value="#42f4ff" aria-label="Panel border color" />
+                </div>
+              </label>
+              <label class="color-field">
+                Accent
+                <div class="color-inputs">
+                  <input type="text" id="setting-theme-accent" placeholder="#3ef2e0" />
+                  <input type="color" id="setting-theme-accent-color" value="#3ef2e0" aria-label="Accent color" />
+                </div>
+              </label>
+              <label class="color-field">
+                Accent Strong
+                <div class="color-inputs">
+                  <input type="text" id="setting-theme-accent-strong" placeholder="#1de8ff" />
+                  <input type="color" id="setting-theme-accent-strong-color" value="#1de8ff" aria-label="Accent strong color" />
+                </div>
+              </label>
+              <label class="color-field">
+                Accent Soft
+                <div class="color-inputs">
+                  <input type="text" id="setting-theme-accent-soft" placeholder="rgba(62, 242, 224, 0.25)" />
+                  <input type="color" id="setting-theme-accent-soft-color" value="#3ef2e0" aria-label="Accent soft color" />
+                </div>
+              </label>
+              <label class="color-field">
+                Text
+                <div class="color-inputs">
+                  <input type="text" id="setting-theme-text" placeholder="#d9f7ff" />
+                  <input type="color" id="setting-theme-text-color" value="#d9f7ff" aria-label="Text color" />
+                </div>
+              </label>
+              <label class="color-field">
+                Muted Text
+                <div class="color-inputs">
+                  <input type="text" id="setting-theme-muted" placeholder="rgba(217, 247, 255, 0.6)" />
+                  <input type="color" id="setting-theme-muted-color" value="#d9f7ff" aria-label="Muted text color" />
+                </div>
+              </label>
+            </div>
+          </div>
+          <div class="section settings-actions">
+            <button class="btn primary" id="customize-apply">Apply Theme</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="loading-overlay" class="loading-overlay" aria-label="System Loading">
+        <div class="loading-card">
+          <div class="loading-title">PHOENIX-15 INIT</div>
+          <div class="loading-sub">Verifying systems</div>
+          <div class="loading-status" id="loading-status">Initializing...</div>
+          <div class="loading-progress">
+            <div class="loading-bar" id="loading-bar"></div>
+          </div>
+          <div class="loading-checks" id="loading-checks"></div>
+          <div class="loading-error hidden" id="loading-error">
+            <div class="loading-error-title">System checks need attention</div>
+            <div class="loading-error-body" id="loading-error-body"></div>
+            <div class="loading-error-actions">
+              <button class="btn primary" id="loading-retry" type="button">Retry checks</button>
+            </div>
+            <div class="loading-error-hint">Check app\logs\Phoenix-15_FIXME_log.log</div>
+          </div>
+          <div class="loading-hint">AI warmup is deferred until after login.</div>
+        </div>
+      </section>
+
+      <section id="login-overlay" class="login-overlay hidden" aria-label="Login">
+        <div class="login-card">
+          <div class="login-brand">
+            <span class="login-title">PHOENIX-15</span>
+            <span class="login-sub">Bjorgsun-26 Core</span>
+          </div>
+          <label class="login-field">
+            <span>User</span>
+            <select id="login-user-select"></select>
+          </label>
+          <div class="login-user" id="login-user-label">Phoenix</div>
+          <div class="login-ai" id="login-ai-label">AI: Bjorgsun-26</div>
+          <label class="login-field">
+            <span>Access</span>
+            <div class="login-input-row">
+              <input id="login-password" type="password" placeholder="Password" autocomplete="current-password" />
+              <button class="icon-btn" id="login-toggle" type="button">Show</button>
+            </div>
+          </label>
+          <button class="btn primary" id="login-unlock">Unlock</button>
+          <div class="login-hint">Enter password to unlock.</div>
+        </div>
+      </section>
+      <section id="secondary-overlay" class="login-overlay secondary-overlay hidden" aria-label="Secondary display locked">
+        <div class="login-card secondary-card">
+          <div class="login-brand">
+            <span class="login-title">SECONDARY DISPLAY</span>
+            <span class="login-sub">Unlock on the main screen</span>
+          </div>
+          <div class="login-hint">This display will sync after the primary login.</div>
+        </div>
+      </section>
+    </div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>

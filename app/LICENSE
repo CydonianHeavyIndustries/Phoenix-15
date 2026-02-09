@@ -1,0 +1,111 @@
+﻿Bjorgsun-26 Non-Commercial Source License v1.0
+Copyright (c) 2025 Beurkson. All rights reserved.
+
+1. Definitions
+
+"Software" means the Bjorgsun-26 codebase and all related files in this repository,
+including any updates or modifications published by the Author.
+
+"Author" means Beurkson, as the copyright holder of the Software.
+
+"Non-Commercial Use" means any use of the Software by an individual or organization
+for their own internal purposes, where the Software itself is not sold, licensed,
+hosted, or otherwise provided as a paid product or service to third parties.
+
+"Commercial Use" means any use of the Software where the Software (or any
+derivative of it) is sold, licensed, hosted, or otherwise made available to third
+parties in exchange for money or other commercial advantage, including as part of
+a paid product or service.
+
+2. Ownership
+
+The Software is protected by copyright and other applicable laws. The Author
+retains all right, title, and interest in and to the Software, including all
+copyrights and any other intellectual property rights.
+
+This License does not transfer any ownership rights to you.
+
+3. License Grant (Non-Commercial)
+
+Subject to your full compliance with this License, the Author grants you a
+limited, revocable, non-exclusive, non-transferable license to:
+
+  (a) download, install, and run the Software;
+  (b) view and study the source code of the Software;
+  (c) modify the Software and create derivative works;
+
+in all cases solely for Non-Commercial Use.
+
+4. Restrictions
+
+You must NOT, without prior written permission from the Author:
+
+  (a) sell, resell, license, sublicense, rent, lease, or otherwise commercialize
+      the Software or any derivative work of the Software;
+
+  (b) offer the Software (or any derivative) as a paid or ad-supported product
+      or service, including Software-as-a-Service (SaaS) or hosted deployments
+      for third parties;
+
+  (c) distribute the Software or any derivative work under a license that allows
+      Commercial Use by third parties;
+
+  (d) remove or alter any copyright, attribution, or license notices in the
+      Software;
+
+  (e) use the name "Bjorgsun-26" or "Beurkson" in a way that suggests endorsement
+      of your product or service without written permission.
+
+Non-commercial redistribution is permitted only if:
+  (i) you do not charge any fee or receive any commercial benefit for the
+      distribution; and
+  (ii) you include this License in full and keep all attribution notices intact.
+
+5. Commercial Use
+
+Any Commercial Use of the Software or any derivative work requires a separate
+written agreement with the Author. To request a commercial license, please
+contact: cydonianheavyindustries@gmail.com.
+
+Without such an agreement, any Commercial Use is strictly prohibited and will
+constitute copyright infringement and breach of this License.
+
+6. No Warranty
+
+THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTY OF ANY
+KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, OR
+AVAILABILITY.
+
+YOU USE THE SOFTWARE AT YOUR OWN RISK.
+
+7. Limitation of Liability
+
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL THE AUTHOR BE LIABLE
+FOR ANY INDIRECT, SPECIAL, INCIDENTAL, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE
+DAMAGES, OR FOR ANY LOSS OF PROFITS, REVENUE, DATA, OR USE, ARISING OUT OF OR
+IN CONNECTION WITH THE SOFTWARE OR THIS LICENSE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGES.
+
+DIRECT DAMAGES, IF ANY, SHALL BE LIMITED TO THE AMOUNT YOU PAID (IF ANY) TO
+OBTAIN A LICENSE TO USE THE SOFTWARE.
+
+8. Termination
+
+This License automatically terminates if you breach any of its terms. Upon
+termination, you must immediately stop using the Software and destroy all copies
+in your possession or control. Sections 2, 4, 6, 7, and 9 survive termination.
+
+The Author may choose to offer you a new license or reinstatement terms, but is
+not obligated to do so.
+
+9. Governing Law
+
+This License is governed by the laws of the Province of Québec and the federal
+laws of Canada applicable therein, without regard to conflict-of-laws rules.
+
+10. Entire Agreement
+
+This License constitutes the entire agreement between you and the Author with
+respect to the Non-Commercial Use of the Software and supersedes any prior
+agreements or understandings regarding that subject.

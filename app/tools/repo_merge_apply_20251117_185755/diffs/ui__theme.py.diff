@@ -1,0 +1,95 @@
+--- canonical/ui\theme.py
++++ other/ui\theme.py
+@@ -14,7 +14,7 @@
+ import tkinter.font as tkfont  # type: ignore
+ from typing import Optional
+ 
+-# Base palette (Bjorgsun classic) and selectable presets
++# Base palette (Bjorgsun classic)
+ COLORS = {
+     "bg": "#0a0c10",
+     "bg_alt": "#0b0e13",
+@@ -28,83 +28,6 @@
+     "accent2": "#ff3ea5",     # magenta/pink highlight (character accent)
+     "peach": "#ffb8a1",
+ }
+-
+-# Additional named theme presets that can be selected at runtime.
+-# These are intentionally small overrides; they map the same keys used in COLORS.
+-THEMES = {
+-    "default": COLORS,
+-    "femboy": {
+-        "bg": "#0b0710",
+-        "bg_alt": "#10061a",
+-        "panel": "#17121b",
+-        "text": "#ffeaff",
+-        "muted": "#c9a7d6",
+-        "ok": "#b6ffd9",
+-        "warn": "#ffb86b",
+-        "accent": "#ff6ec7",      # pink-cyan mix
+-        "accent_glow": "#ff9bd8",
+-        "accent2": "#69f0ff",
+-        "peach": "#ffd7e9",
+-    },
+-    "titanfall": {
+-        "bg": "#081017",
+-        "bg_alt": "#0b1620",
+-        "panel": "#0f1720",
+-        "text": "#cfe8ff",
+-        "muted": "#9fb8c6",
+-        "ok": "#7ef59b",
+-        "warn": "#ffb84d",
+-        "accent": "#2fb7ff",      # industrial blue
+-        "accent_glow": "#69d6ff",
+-        "accent2": "#ff9a3c",     # orange highlight
+-        "peach": "#ffcfa8",
+-    },
+-    "scifi": {
+-        "bg": "#03010a",
+-        "bg_alt": "#081023",
+-        "panel": "#0b1020",
+-        "text": "#dbe8ff",
+-        "muted": "#9fb7d6",
+-        "ok": "#6ef5b0",
+-        "warn": "#ffd76b",
+-        "accent": "#b36bff",      # neon purple
+-        "accent_glow": "#e0b7ff",
+-        "accent2": "#32f7e6",     # neon teal
+-        "peach": "#ffdfc6",
+-    },
+-}
+-
+-
+-def set_theme(name: str) -> None:
+-    """Apply a named theme by updating the `COLORS` dict in-place.
+-
+-    Callers can use `set_theme('femboy')`, `set_theme('titanfall')`, or
+-    `set_theme('scifi')`. The selection can also be driven by the
+-    environment variable `UI_THEME`.
+-    """
+-    name = (name or "").lower()
+-    if not name or name == "default":
+-        return
+-    t = THEMES.get(name)
+-    if not t:
+-        return
+-    # Update COLORS in-place to keep existing references valid
+-    COLORS.clear()
+-    COLORS.update(t)
+-
+-
+-def available_themes() -> list[str]:
+-    """Return a list of available theme names."""
+-    return sorted(THEMES.keys())
+-
+-
+-# Apply env-driven default theme at import time if present
+-_env_theme = os.getenv("UI_THEME", "").strip()
+-if _env_theme:
+-    try:
+-        set_theme(_env_theme)
+-    except Exception:
+-        pass
+ 
+ 
+ POSITIVE_MOODS = {"joy", "happiness", "fun", "glee", "amusement", "love", "adoration", "gratitude", "admiration"}

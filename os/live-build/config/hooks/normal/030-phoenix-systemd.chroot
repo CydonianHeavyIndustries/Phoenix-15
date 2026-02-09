@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+systemctl enable NetworkManager || true
+systemctl enable lightdm || true
+systemctl enable phoenix-backend.service || true
+systemctl enable phoenix-ui.service || true
+systemctl enable phoenix-data.service || true
+systemctl enable phoenix-sync.service || true
+systemctl enable phoenix-storage-policy.service || true

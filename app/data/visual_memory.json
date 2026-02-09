@@ -1,0 +1,76 @@
+[
+  {
+    "timestamp": "2025-12-21T17:38:03.823036Z",
+    "filename": "apple.png",
+    "summary": "Image 360x360, mode P. Dominant colors: #a03235, #020001, #000000.",
+    "meta": {
+      "digest": "20534d83df8ba759",
+      "filename": "apple.png",
+      "width": 360,
+      "height": 360,
+      "mode": "P",
+      "dominant_colors": [
+        "#a03235",
+        "#020001",
+        "#000000"
+      ]
+    },
+    "prompt": "what do you see about this picture? analyze it and tell me what you've learned from it."
+  },
+  {
+    "timestamp": "2025-12-21T20:16:55.017398Z",
+    "filename": "apple.png",
+    "summary": "An image of a ripe, red apple with a visible stem and droplets of water around it. The background is plain and black, emphasizing the fruit.",
+    "meta": {
+      "digest": "20534d83df8ba759",
+      "filename": "apple.png"
+    },
+    "prompt": "what do you see?"
+  },
+  {
+    "timestamp": "2025-12-21T20:16:56.133261Z",
+    "filename": "apple.png",
+    "summary": "The image features a single apple with water droplets, creating a glossy effect on its surface. The apple appears to be red and has a small stem visible at the top. It is positioned against a black background. There are no texts or additional objects present in the image.",
+    "meta": {
+      "digest": "20534d83df8ba759",
+      "filename": "apple.png"
+    },
+    "prompt": "Describe the image briefly."
+  },
+  {
+    "timestamp": "2025-12-21T21:29:21.822281Z",
+    "filename": "apple.png",
+    "summary": "The image shows an apple with a shiny, glossy surface and some droplets of water on it. It appears to be a close-up photograph highlighting the texture and color of the fruit, which is characteristic of a fresh and possibly ripe red apple.",
+    "meta": {
+      "digest": "20534d83df8ba759",
+      "filename": "apple.png",
+      "vision_mode": "ollama",
+      "model": "llava:7b"
+    },
+    "prompt": "what do you see?"
+  },
+  {
+    "timestamp": "2025-12-21T21:29:23.877035Z",
+    "filename": "apple.png",
+    "summary": "The image is a close-up photograph of an apple with water droplets scattered across its surface, giving it a shiny appearance. It has a smooth texture and a glossy skin color that ranges from red to green. The apple is not whole; part of it appears cut away, revealing the inner flesh which is also a mix of red and green tones. The background is completely black, emphasizing the brightness and vibrancy of the apple's colors. There are no visible texts or other objects in the image.",
+    "meta": {
+      "digest": "20534d83df8ba759",
+      "filename": "apple.png",
+      "vision_mode": "ollama",
+      "model": "llava:7b"
+    },
+    "prompt": "Describe the image briefly."
+  },
+  {
+    "timestamp": "2025-12-22T03:32:29.431670Z",
+    "filename": "apple.png",
+    "summary": "This is an image of a shiny, glossy red apple with drops of water on its surface. The apple appears to be fresh and ripe, and it's set against a black background which makes the colors of the apple stand out.",
+    "meta": {
+      "digest": "20534d83df8ba759",
+      "filename": "apple.png",
+      "vision_mode": "ollama",
+      "model": "llava:7b"
+    },
+    "prompt": "what do you see?"
+  }
+]

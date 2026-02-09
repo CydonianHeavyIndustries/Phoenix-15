@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+/* Custom color definitions */
+:root {
+  --color-neon-cyan: #00FFD1;
+  --color-bright-cyan: #00E5CC;
+  --color-turquoise: #00D9FF;
+  --color-neon-green: #00FF88;
+  --color-hot-pink: #FF1E8E;
+  --color-magenta: #FF006E;
+}
+
+/* Base typography */
+body {
+  @apply antialiased;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 255, 209, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00FFD1, #00FF88);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #00E5CC, #00FFD1);
+}
+
+/* Glowing text effect */
+.text-glow-cyan {
+  text-shadow: 0 0 10px rgba(0, 255, 209, 0.8), 0 0 20px rgba(0, 255, 209, 0.4);
+}
+
+.text-glow-pink {
+  text-shadow: 0 0 10px rgba(255, 30, 142, 0.8), 0 0 20px rgba(255, 30, 142, 0.4);
+}
+
+.text-glow-green {
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.8), 0 0 20px rgba(0, 255, 136, 0.4);
+}
+
+/* Border glow effects */
+.border-glow-cyan {
+  box-shadow: 0 0 15px rgba(0, 255, 209, 0.5), inset 0 0 15px rgba(0, 255, 209, 0.1);
+}
+
+.border-glow-green {
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.5), inset 0 0 15px rgba(0, 255, 136, 0.1);
+}
+
+.border-glow-pink {
+  box-shadow: 0 0 15px rgba(255, 30, 142, 0.5), inset 0 0 15px rgba(255, 30, 142, 0.1);
+}

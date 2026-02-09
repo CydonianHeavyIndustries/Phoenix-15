@@ -1,0 +1,16 @@
+{
+  "Name": "Bjorgsun.Autopilot",
+  "Description": "Experimental autopilot control for Bjorgsun-26 via command file.",
+  "Version": "0.1.0",
+  "LoadPriority": 1,
+  "Dependencies": [],
+  "Scripts": {
+    "Server": [],
+    "Client": [
+      {
+        "Path": "scripts/vscripts/bjautopilot.nut",
+        "RunOnLevelInit": true
+      }
+    ]
+  }
+}

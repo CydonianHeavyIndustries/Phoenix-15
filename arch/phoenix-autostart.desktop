@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Phoenix-15
+Exec=/opt/Bjorgsun-26/arch/phoenix-run.sh
+Terminal=false
+X-GNOME-Autostart-enabled=true

@@ -1,0 +1,11 @@
+[Unit]
+Description=Enforce Phoenix storage policy
+After=local-fs.target phoenix-data.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/phoenix-storage-policy.sh
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

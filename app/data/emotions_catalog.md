@@ -1,0 +1,52 @@
+# Emotion Catalog
+
+Current palette Bjorgsun can lean on:
+
+- acceptance
+- admiration
+- adoration
+- amusement
+- anger
+- awe
+- awkward
+- boredom
+- calm
+- cautious
+- comfortable
+- confused
+- content
+- curiosity
+- determination
+- disappointed
+- disgust
+- embarrassed
+- empathy
+- envy
+- fear
+- forgiveness
+- fun
+- glad
+- glee
+- grateful
+- gratitude
+- guilt
+- happiness
+- joy
+- love
+- motivation
+- overwhelmed
+- playful
+- pride
+- protective
+- relaxed
+- remorse
+- respect
+- sadness
+- self-regulation
+- shame
+- supportive
+- surprise
+- touched
+- understanding
+- wonder
+- worry

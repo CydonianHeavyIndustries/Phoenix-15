@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bjorgsun-26 Core v2</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header id="top-bar">
+        <div class="brand">
+          <span class="brand-mark">BJORG</span>
+          <span class="brand-sep">/</span>
+          <span class="brand-mark">SUN-26</span>
+          <span class="brand-sub">CORE v2</span>
+        </div>
+        <div class="top-status">
+          <span class="status-pill" id="backend-pill">Backend: ...</span>
+          <span class="status-pill" id="ollama-pill">Ollama: ...</span>
+          <span class="status-pill" id="memory-pill">Memory: ...</span>
+        </div>
+        <div class="top-controls">
+          <button class="icon-btn" id="btn-frequency" title="Frequency Hub">Frequency</button>
+          <select id="module-select" class="module-select" aria-label="Module selector">
+            <option value="core">Core</option>
+            <option value="audio">Audio Lab</option>
+            <option value="all">All Modules</option>
+          </select>
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn" id="btn-settings" title="Settings">Settings</button>
+          <button class="icon-btn" id="btn-customize" title="Customize UI">Customize UI</button>
+          <button class="icon-btn" id="btn-files" title="File Browser">Files</button>
+          <button class="icon-btn" id="btn-minimize" title="Minimize">Min</button>
+        </div>
+      </header>
+
+      <main id="workspace">
+        <section id="orb-core" aria-label="Neural orb">
+          <canvas id="orb-canvas" width="420" height="420"></canvas>
+          <div class="orb-glow"></div>
+          <div class="orb-label" id="orb-label">DORMANT</div>
+          <div class="orb-sub" id="orb-sub">NEURAL CORE</div>
+          <div class="orb-heartbeat" id="orb-heart"></div>
+        </section>
+        <section id="orb-controls" aria-label="Orb controls">
+          <button class="btn primary" id="btn-wake">Wake Systems</button>
+          <button class="btn ghost" id="btn-sleep">Sleep Systems</button>
+          <button class="btn ghost" id="btn-exit">Exit</button>
+        </section>
+
+        <section class="panel floating" id="panel-controls" data-panel="controls" style="left: 4vw; top: 10vh; width: 260px;">
+          <div class="panel-header">System Control</div>
+          <div class="panel-body">
+            <button class="btn ghost" id="btn-selfcheck">Self-check</button>
+            <button class="btn ghost" id="btn-logs">Open Logs</button>
+            <button class="btn ghost" id="btn-memory-check">Memory Check</button>
+          </div>
+        </section>
+
+        <section class="panel floating" id="panel-chat" data-panel="chat" style="left: 4vw; top: 36vh; width: 32vw; height: 54vh;">
+          <div class="panel-header">Chat Interface</div>
+          <div class="panel-body panel-scroll" id="chat-log"></div>
+          <div class="panel-footer chat-footer">
+            <button class="btn ghost" id="chat-attach" title="Attach image">Image</button>
+            <span class="chat-attach-label" id="chat-attach-label">No image</span>
+            <input id="chat-image" type="file" accept="image/*" />
+            <input id="chat-input" type="text" placeholder="Enter command or message..." />
+            <button class="btn primary" id="chat-send">Send</button>
+          </div>
+        </section>
+
+        <section class="panel floating" id="panel-system" data-panel="system" style="left: 38vw; top: 16vh; width: 26vw; height: 34vh;">
+          <div class="panel-header">System Diagnostics</div>
+          <div class="panel-body">
+            <div class="diag-row"><span>CPU Load</span><span id="diag-cpu">--</span></div>
+            <div class="diag-row"><span>Memory</span><span id="diag-mem">--</span></div>
+            <div class="diag-row"><span>GPU Load</span><span id="diag-gpu">--</span></div>
+            <div class="diag-row"><span>Temp</span><span id="diag-temp">--</span></div>
+            <div class="diag-row"><span>Uptime</span><span id="diag-uptime">--</span></div>
+            <div class="diag-row"><span>Processes</span><span id="diag-proc">--</span></div>
+            <div class="diag-row"><span>Network</span><span id="diag-net">--</span></div>
+          </div>
+        </section>
+
+        <section class="panel floating" id="panel-frequency" data-panel="frequency" style="left: 66vw; top: 18vh; width: 30vw; height: 50vh;">
+          <div class="panel-header">Frequency Hub</div>
+          <div class="panel-body">
+            <div class="freq-orb" id="freq-orb"></div>
+            <div class="field-grid">
+              <label>
+                Import audio
+                <input type="file" id="freq-import" accept="audio/*" />
+              </label>
+              <label>
+                Tag frequency (Hz)
+                <input type="number" id="freq-tag" placeholder="293" />
+              </label>
+              <label>
+                Emotion tag
+                <input type="text" id="freq-emotion" placeholder="Calm / Flow" />
+              </label>
+            </div>
+            <button class="btn ghost" id="freq-analyze">Analyze</button>
+          </div>
+        </section>
+
+        <section class="panel floating" id="panel-orb-tools" data-panel="orbtools" style="left: 38vw; top: 54vh; width: 26vw; height: 26vh;">
+          <div class="panel-header">Orb Output</div>
+          <div class="panel-body">
+            <div class="orb-state-line" id="orb-state-line">State: Dormant</div>
+            <div class="orb-state-line" id="orb-thoughts">Thought stream: idle</div>
+            <div class="orb-state-line" id="orb-audio">Voice: muted</div>
+            <div class="orb-state-line" id="orb-heartbeat-status">Heartbeat: standby</div>
+          </div>
+        </section>
+
+        <section class="panel floating" id="panel-audio" data-panel="audio" style="left: 66vw; top: 70vh; width: 30vw; height: 26vh;">
+          <div class="panel-header">Audio Lab</div>
+          <div class="panel-body">
+            <div class="audio-row">
+              <label for="audio-input">Input</label>
+              <select id="audio-input"></select>
+            </div>
+            <div class="audio-row">
+              <label for="audio-output">Output</label>
+              <select id="audio-output"></select>
+            </div>
+            <div class="audio-actions">
+              <button class="btn ghost" id="audio-refresh">Refresh devices</button>
+              <button class="btn ghost" id="audio-apply">Apply</button>
+            </div>
+            <div class="audio-actions">
+              <button class="btn ghost" id="audio-tone">Play 440 Hz</button>
+              <button class="btn ghost" id="audio-sweep">Sweep</button>
+              <button class="btn ghost" id="audio-stop">Stop</button>
+            </div>
+            <div class="audio-metrics">
+              <span>RMS: <strong id="audio-rms">--</strong></span>
+              <span>Peak: <strong id="audio-peak">--</strong></span>
+            </div>
+          </div>
+        </section>
+
+        <section id="prompt-stack"></section>
+        <section id="toast-stack"></section>
+      </main>
+
+      <section id="settings-panel" class="panel overlay hidden">
+        <div class="panel-header">
+          System Configuration
+          <button class="icon-btn" id="settings-close">X</button>
+        </div>
+        <div class="panel-body panel-scroll">
+          <div class="section">
+            <h3>Audio Interface</h3>
+            <label class="toggle">
+              <input type="checkbox" id="setting-system-sounds" />
+              <span>System Sounds</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="setting-voice-feedback" />
+              <span>Voice Feedback</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="setting-reply-chime" />
+              <span>Reply chime when text-only</span>
+            </label>
+            <label>
+              Volume Level
+              <input type="range" id="setting-volume" min="0" max="100" value="70" />
+            </label>
+            <label>
+              Chime Volume
+              <input type="range" id="setting-chime" min="0" max="100" value="35" />
+            </label>
+            <label>
+              TTS Voice
+              <select id="setting-voice">
+                <option value="en-US-JennyNeural">Jenny (androgynous)</option>
+                <option value="en-US-AvaNeural">Ava</option>
+                <option value="en-US-AriaNeural">Aria</option>
+                <option value="en-GB-SoniaNeural">Sonia</option>
+              </select>
+            </label>
+            <label>
+              TTS Rate
+              <input type="text" id="setting-rate" value="-5%" />
+            </label>
+            <label>
+              TTS Pitch
+              <input type="text" id="setting-pitch" value="+2%" />
+            </label>
+          </div>
+
+          <div class="section">
+            <h3>Notifications</h3>
+            <label class="toggle">
+              <input type="checkbox" id="setting-hush" />
+              <span>Hush mode (mute alerts)</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="setting-system-alerts" />
+              <span>System Alerts</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="setting-process-warnings" />
+              <span>Process Warnings</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="setting-update-notices" />
+              <span>Update Notices</span>
+            </label>
+          </div>
+
+          <div class="section">
+            <h3>Panels</h3>
+            <label class="toggle">
+              <input type="checkbox" id="setting-show-chat" />
+              <span>Chat Interface</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="setting-show-system" />
+              <span>System Diagnostics</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="setting-show-frequency" />
+              <span>Frequency Hub</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="setting-show-orbtools" />
+              <span>Orb Output</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="setting-show-audio" />
+              <span>Audio Lab</span>
+            </label>
+          </div>
+
+          <div class="section" id="theme-section">
+            <h3>Theme Configuration</h3>
+            <div class="field-grid theme-grid">
+              <label>
+                Background
+                <input type="text" id="setting-theme-bg" placeholder="#070c14" />
+              </label>
+              <label>
+                Panel
+                <input type="text" id="setting-theme-panel" placeholder="rgba(9, 22, 34, 0.86)" />
+              </label>
+              <label>
+                Panel Border
+                <input type="text" id="setting-theme-panel-border" placeholder="rgba(66, 244, 255, 0.35)" />
+              </label>
+              <label>
+                Accent
+                <input type="text" id="setting-theme-accent" placeholder="#3ef2e0" />
+              </label>
+              <label>
+                Accent Strong
+                <input type="text" id="setting-theme-accent-strong" placeholder="#1de8ff" />
+              </label>
+              <label>
+                Accent Soft
+                <input type="text" id="setting-theme-accent-soft" placeholder="rgba(62, 242, 224, 0.25)" />
+              </label>
+              <label>
+                Text
+                <input type="text" id="setting-theme-text" placeholder="#d9f7ff" />
+              </label>
+              <label>
+                Muted Text
+                <input type="text" id="setting-theme-muted" placeholder="rgba(217, 247, 255, 0.6)" />
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>

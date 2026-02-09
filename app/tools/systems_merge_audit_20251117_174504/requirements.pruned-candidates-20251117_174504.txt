@@ -1,0 +1,49 @@
+# Heavy imports detected across chosen files
+numpy  # heavy (detected)
+pytesseract  # heavy (detected)
+sounddevice  # heavy (detected)
+keyboard  # heavy (detected)
+requests  # heavy (detected)
+
+# All detected top-level imports
+PIL
+__future__
+asyncio
+audioop
+collections
+concurrent
+config
+copy
+core
+ctypes
+datetime
+difflib
+http
+importlib
+json
+keyboard
+math
+numpy
+os
+pathlib
+pytesseract
+queue
+random
+re
+requests
+sounddevice
+soundfile
+subprocess
+sys
+systems
+tempfile
+threading
+time
+tkinter
+traceback
+types
+typing
+urllib
+uuid
+wave
+zipfile

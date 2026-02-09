@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Install Phoenix-15
+Exec=calamares
+Icon=system-installer
+Categories=System;

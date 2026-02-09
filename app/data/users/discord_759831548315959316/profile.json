@@ -1,0 +1,30 @@
+{
+  "user": "discord_759831548315959316",
+  "display_name": "Crow",
+  "facts": {
+    "habits": [],
+    "location": [],
+    "notes": [],
+    "contacts": [],
+    "preferences": [],
+    "appearance": []
+  },
+  "rules": [
+    "Names (first name or nickname) are okay; last names are not stored.",
+    "Street addresses, coordinates, postal codes, and IP addresses are never saved.",
+    "Only coarse locations (country/province or 'near <city>') are allowed.",
+    "Phone numbers and email addresses are allowed when voluntarily shared by the user."
+  ],
+  "relationship": "acquaintance",
+  "interactions": 1,
+  "guardian": {
+    "incidents": 0,
+    "pending": false,
+    "pending_reason": "",
+    "pending_severity": "",
+    "pending_ts": "",
+    "forgiveness_used": 0
+  },
+  "created": "2025-11-10 04:05:23 UTC",
+  "updated": "2025-11-10 04:05:23 UTC"
+}

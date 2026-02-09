@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+REQ="/opt/phoenix/app/requirements-linux.txt"
+if [ ! -f "$REQ" ]; then
+  REQ="/opt/phoenix/app/requirements.txt"
+fi
+
+python3 -m pip install --upgrade pip
+python3 -m pip install --no-cache-dir -r "$REQ"

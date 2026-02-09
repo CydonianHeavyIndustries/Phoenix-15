@@ -1,0 +1,12 @@
+{
+  "mode": "OVERRIDE_INPUT",
+  "input": {
+    "forward": 1,
+    "strafe": 0,
+    "yaw": 45,
+    "pitch": 0,
+    "fire": true,
+    "ability": "ronin_block",
+    "core": false
+  }
+}

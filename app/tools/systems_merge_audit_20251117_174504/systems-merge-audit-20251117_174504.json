@@ -1,0 +1,164 @@
+{
+  "timestamp": "20251117_174504",
+  "canonical": "D:\\Repos\\Bjorgsun26EXE\\systems",
+  "other": "D:\\OneDrive\\Bjorgsun-26\\systems",
+  "total_files": 26,
+  "results": [
+    {
+      "path": "__init__.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "audio.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "audio_sense.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "awareness.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "briefing.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "calm_shutdown.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "discord_bridge.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "dreams.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "dreamscreen.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "gaming_bridge.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "hibernation.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "hypershift.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "notify.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "overlay_web.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "reloader.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "ronin_ai.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "selfcheck.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "stories.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "stt.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "tasks.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "therapy.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "timekeeper.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "titanfall.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "vision.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "voicemeeter.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    },
+    {
+      "path": "xsoverlay.py",
+      "in_canonical": true,
+      "in_other": true,
+      "decision": "identical"
+    }
+  ]
+}

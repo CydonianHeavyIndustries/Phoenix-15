@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+lb config \
+  --distribution bookworm \
+  --architectures amd64 \
+  --binary-images iso-hybrid \
+  --archive-areas "main contrib non-free-firmware" \
+  --debian-installer live \
+  --bootappend-live "boot=live components username=phoenix hostname=phoenix-15 locales=en_US.UTF-8 keyboard-layouts=us"

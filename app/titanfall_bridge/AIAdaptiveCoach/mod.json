@@ -1,0 +1,23 @@
+{
+  "Name": "AIAdaptiveCoach",
+  "Description": "Emits lightweight telemetry for an external AI coach; listens for tips via logs. Companion app handles OpenAI calls.",
+  "Version": "0.1.0",
+  "LoadPriority": 1,
+  "ConVars": [
+    {
+      "Name": "ai_coach_enable",
+      "DefaultValue": "1",
+      "Description": "Enable/disable emitting telemetry to the log for the AI coach."
+    }
+  ],
+  "Scripts": [
+    {
+      "Path": "ai_coach_server.nut",
+      "RunOn": "SERVER || CLIENT"
+    },
+    {
+      "Path": "ai_coach_client.nut",
+      "RunOn": "UI || CLIENT"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+--- canonical/.vscode\tasks.json
++++ other/.vscode\tasks.json
+@@ -1,16 +1,3 @@
+-{
+-  "version": "2.0.0",
+-  "tasks": [
+-    {
+-      "label": "Launch Bjorgsun UI",
+-      "type": "shell",
+-      "command": "& .\\.venv\\Scripts\\Activate.ps1; python .\\scripts\\start_ui.py",
+-      "options": { "cwd": "${workspaceFolder}" },
+-      "problemMatcher": [],
+-      "presentation": { "reveal": "always", "panel": "dedicated" }
+-    }
+-  ]
+-}
+ {
+   // VS Code tasks to streamline develop/run/build workflows.
+   // Press Ctrl+Shift+B (Run Build Task…) and choose one.

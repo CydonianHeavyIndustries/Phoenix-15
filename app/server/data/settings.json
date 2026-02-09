@@ -1,0 +1,118 @@
+{
+  "systemSounds": true,
+  "voiceMode": true,
+  "replyChime": true,
+  "volume": 24,
+  "chimeVolume": 30,
+  "systemAlerts": true,
+  "processWarnings": true,
+  "updateNotices": true,
+  "notifications": true,
+  "animations": true,
+  "grid": false,
+  "opacity": 90,
+  "processingMode": "BALANCED",
+  "hardwareAccel": true,
+  "backgroundProc": true,
+  "devEnabled": false,
+  "debugOverlay": false,
+  "preferredInputId": null,
+  "themeBg": "#061923",
+  "themePanel": "#0b1f2a",
+  "themeBorder": "#1e6b73",
+  "themeText": "#9fe7df",
+  "themeAccent": "#28e6d4",
+  "themeAccent2": "#7cf7ff",
+  "usbLocalBootEnabled": false,
+  "usbLocalBootPath": "",
+  "usbIncludeOs": false,
+  "usbIncludeApp": true,
+  "usbIncludeMemory": true,
+  "usbIncludeUserData": true,
+  "usbCopyPreset": "full",
+  "remoteUiEnabled": false,
+  "remoteUiHost": "CHII.inc",
+  "remoteTunnelEnabled": false,
+  "desktopViewEnabled": true,
+  "desktopViewMonitors": [
+    "\\\\.\\DISPLAY1",
+    "\\\\.\\DISPLAY3"
+  ],
+  "performanceFocusEnabled": false,
+  "voiceFeedback": true,
+  "hush": false,
+  "voice": "en-US-JennyNeural",
+  "rate": "-5%",
+  "pitch": "+2%",
+  "showChat": true,
+  "showSystem": true,
+  "showFrequency": true,
+  "showOrbTools": true,
+  "showAudio": true,
+  "theme": {
+    "bg": "#070c14",
+    "panel": "rgba(9, 22, 34, 0.86)",
+    "panelBorder": "rgba(66, 244, 255, 0.35)",
+    "accent": "#3ef2e0",
+    "accentStrong": "#1de8ff",
+    "accentSoft": "rgba(62, 242, 224, 0.25)",
+    "text": "#d9f7ff",
+    "muted": "rgba(217, 247, 255, 0.6)"
+  },
+  "loginEnabled": true,
+  "loginUser": "Phoenix",
+  "loginPass": "12345",
+  "aiName": "Bjorgsun-26",
+  "panelPositions": {
+    "controls": {
+      "left": "68px",
+      "top": "766px",
+      "width": "260px",
+      "height": ""
+    },
+    "system": {
+      "left": "1364px",
+      "top": "598px",
+      "width": "26vw",
+      "height": "34vh"
+    },
+    "orbtools": {
+      "left": "1388px",
+      "top": "70px",
+      "width": "26vw",
+      "height": "26vh"
+    },
+    "frequency": {
+      "left": "756px",
+      "top": "354px",
+      "width": "30vw",
+      "height": "50vh"
+    },
+    "audio": {
+      "left": "633.602px",
+      "top": "270px",
+      "width": "34vw",
+      "height": "50vh"
+    },
+    "artificer": {
+      "left": "738.406px",
+      "top": "492.5px",
+      "width": "26vw",
+      "height": ""
+    },
+    "perf": {
+      "left": "1208.81px",
+      "top": "438px",
+      "width": "36vw",
+      "height": "40vh"
+    },
+    "chat": {
+      "left": "68px",
+      "top": "118px",
+      "width": "32vw",
+      "height": "54vh"
+    }
+  },
+  "emotionPromptEnabled": true,
+  "showPerf": true
+}

@@ -1,0 +1,1 @@
+﻿Vision baseline placeholder. Capture snapshots during calibration to populate this file.

@@ -1,0 +1,17 @@
+{
+  "system_sounds": true,
+  "voice_feedback": true,
+  "reply_chime": true,
+  "volume": 70,
+  "chime_volume": 35,
+  "hush": false,
+  "system_alerts": true,
+  "process_warnings": true,
+  "update_notices": true,
+  "voice": "en-US-JennyNeural",
+  "rate": "-5%",
+  "pitch": "+2%",
+  "eq_apo_config_path": "C:\\Program Files\\EqualizerAPO\\config\\config.txt",
+  "media_source": "none",
+  "spotify_url": ""
+}

@@ -1,0 +1,14 @@
+{
+  "demon_mode": {
+    "name": "Warm Flame",
+    "base": ["#ff6b1a", "#ff9a1f", "#ffd166", "#fff1b0"],
+    "glow": ["#ff3b00", "#ff6f00"],
+    "notes": "Orange/yellow flame, brightening as hit intensity increases."
+  },
+  "archdemon_mode": {
+    "name": "Blue Flame",
+    "base": ["#1fb6ff", "#00e5ff", "#8cf7ff", "#e8ffff"],
+    "glow": ["#00b3ff", "#2d6bff"],
+    "notes": "Hotter blue/cyan flame."
+  }
+}

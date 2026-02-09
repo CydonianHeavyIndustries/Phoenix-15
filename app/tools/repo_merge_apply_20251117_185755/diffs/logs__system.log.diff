@@ -1,0 +1,35 @@
+--- canonical/logs\system.log
++++ other/logs\system.log
+@@ -8411,3 +8411,32 @@
+ CPU 19.4% | RAM 45.5%
+ CPU 29.0% | RAM 45.7%
+ CPU 28.2% | RAM 45.6%
++CPU 0.0% | RAM 47.3%
++CPU 65.1% | RAM 48.3%
++CPU 71.7% | RAM 47.8%
++CPU 63.6% | RAM 48.0%
++CPU 90.0% | RAM 49.3%
++CPU 77.2% | RAM 48.5%
++CPU 80.4% | RAM 48.5%
++CPU 68.1% | RAM 47.8%
++CPU 67.5% | RAM 47.6%
++CPU 57.7% | RAM 48.0%
++CPU 70.6% | RAM 47.9%
++CPU 61.2% | RAM 48.2%
++CPU 73.7% | RAM 48.5%
++CPU 57.6% | RAM 48.3%
++CPU 61.6% | RAM 48.8%
++CPU 60.5% | RAM 48.5%
++CPU 87.0% | RAM 50.5%
++CPU 77.1% | RAM 49.9%
++CPU 80.1% | RAM 50.3%
++CPU 80.8% | RAM 49.9%
++CPU 65.8% | RAM 49.9%
++CPU 70.4% | RAM 49.1%
++CPU 72.6% | RAM 54.2%
++CPU 57.4% | RAM 52.2%
++CPU 48.7% | RAM 49.9%
++CPU 76.8% | RAM 50.7%
++CPU 67.6% | RAM 50.3%
++CPU 73.0% | RAM 49.7%
++CPU 58.7% | RAM 50.8%

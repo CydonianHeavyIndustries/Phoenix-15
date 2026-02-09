@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Phoenix-15
+Exec=/usr/local/bin/phoenix-kiosk.sh
+X-GNOME-Autostart-enabled=true
+X-KDE-autostart-after=panel
+OnlyShowIn=XFCE;GNOME;KDE;LXDE;LXQt;

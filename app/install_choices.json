@@ -1,0 +1,12 @@
+{
+    "launchers":  "both",
+    "tablet":  "yes",
+    "gpt":  "yes",
+    "ios":  "yes",
+    "env_choice":  "yes",
+    "install_path":  "G:/Bjorgsun-26",
+    "virtual_drive_letter":  "G",
+    "virtual_drive_path":  "C:\\BjorgProj\\Bjorgsun-26v1.vhdx",
+    "virtual_drive_size_gb":  "100",
+    "virtual_drive_name":  "BJORGSUN_SECURE"
+}

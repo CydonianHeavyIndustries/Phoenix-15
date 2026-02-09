@@ -1,0 +1,15 @@
+{
+  "updated_at": "2026-01-03T06:18:08.715365Z",
+  "echoes": [
+    {
+      "root": "C:\\BjorgProj\\Bjorgsun-26\\app",
+      "ok": false,
+      "issues": [
+        "missing:RUN_PHOENIX_15.bat",
+        "missing:app\\server\\server.py",
+        "missing:app\\ui\\scifiaihud\\build\\index.html"
+      ],
+      "checked_at": "2026-01-03T06:18:08.651217Z"
+    }
+  ]
+}

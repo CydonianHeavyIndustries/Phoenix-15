@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "patterns": [],
+  "stats": {
+    "samples": 73,
+    "heatmap": {
+      "space": 17,
+      "w": 4,
+      "shift": 12,
+      "a": 35,
+      "s": 3,
+      "d": 2
+    },
+    "captures": 0
+  }
+}

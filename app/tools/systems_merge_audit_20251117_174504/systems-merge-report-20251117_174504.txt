@@ -1,0 +1,36 @@
+Systems merge audit - 20251117_174504
+Canonical: D:\Repos\Bjorgsun26EXE\systems
+Other: D:\OneDrive\Bjorgsun-26\systems
+Total files examined: 26
+
+Decisions (first 200):
+__init__.py: identical
+audio.py: identical
+audio_sense.py: identical
+awareness.py: identical
+briefing.py: identical
+calm_shutdown.py: identical
+discord_bridge.py: identical
+dreams.py: identical
+dreamscreen.py: identical
+gaming_bridge.py: identical
+hibernation.py: identical
+hypershift.py: identical
+notify.py: identical
+overlay_web.py: identical
+reloader.py: identical
+ronin_ai.py: identical
+selfcheck.py: identical
+stories.py: identical
+stt.py: identical
+tasks.py: identical
+therapy.py: identical
+timekeeper.py: identical
+titanfall.py: identical
+vision.py: identical
+voicemeeter.py: identical
+xsoverlay.py: identical
+
+Diffs directory: diffs/
+Imported packages file: D:\Bjorgsun_Backups\systems_merge_audit_20251117_174504\detected_imports_20251117_174504.txt
+Pruned candidates file: D:\Bjorgsun_Backups\systems_merge_audit_20251117_174504\requirements.pruned-candidates-20251117_174504.txt

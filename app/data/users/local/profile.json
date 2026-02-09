@@ -1,0 +1,30 @@
+{
+  "user": "local",
+  "display_name": "local",
+  "facts": {
+    "habits": [],
+    "contacts": [],
+    "preferences": [],
+    "appearance": [],
+    "location": [],
+    "notes": []
+  },
+  "rules": [
+    "Names (first name or nickname) are okay; last names are not stored.",
+    "Street addresses, coordinates, postal codes, and IP addresses are never saved.",
+    "Only coarse locations (country/province or 'near <city>') are allowed.",
+    "Phone numbers and email addresses are allowed when voluntarily shared by the user."
+  ],
+  "relationship": "friend",
+  "interactions": 96,
+  "guardian": {
+    "incidents": 0,
+    "pending": false,
+    "pending_reason": "",
+    "pending_severity": "",
+    "pending_ts": "",
+    "forgiveness_used": 0
+  },
+  "created": "2025-12-17 13:32:54 UTC",
+  "updated": "2026-01-06 19:55:17 UTC"
+}

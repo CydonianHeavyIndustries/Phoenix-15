@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+chmod +x /usr/local/bin/phoenix-kiosk.sh
+chmod +x /usr/local/bin/phoenix-mount-data.sh
+chmod +x /usr/local/bin/phoenix-storage-policy.sh
+chmod +x /usr/local/bin/phoenix-sync.sh
+chmod +x /usr/local/bin/phoenix-backend.sh
+chmod +x /usr/local/bin/phoenix-ui.sh
+chmod 0440 /etc/sudoers.d/phoenix-power

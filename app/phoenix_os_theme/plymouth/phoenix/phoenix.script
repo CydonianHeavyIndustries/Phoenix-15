@@ -1,0 +1,14 @@
+ImageDir = Theme.GetImagePath();
+phoenix = Image(ImageDir + "/phoenix.png");
+
+fun on_draw () {
+    Window.Clear();
+    x = (Window.GetWidth() - phoenix.GetWidth()) / 2;
+    y = (Window.GetHeight() - phoenix.GetHeight()) / 2;
+    phoenix.SetPosition(x, y);
+    phoenix.Draw();
+}
+
+Window.SetBackgroundTopColor(0.03, 0.05, 0.08);
+Window.SetBackgroundBottomColor(0.02, 0.10, 0.12);
+Window.SetDrawFunction(on_draw);

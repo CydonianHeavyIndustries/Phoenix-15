@@ -1,0 +1,16 @@
+https://platform.openai.com/api-keys
+https://discord.com/developers/
+https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID
+OPENAI_API_KEY=
+DISCORD_TOKEN=
+DISCORD_ALERT_WEBHOOK=
+SAFETY_WEBHOOK=
+OWNER_HANDLE=
+OWNER_SAFE_ALIASES=
+DISCORD_OWNER_ID=
+HOTKEY_PTT=f9
+OPENAI_MODEL_CHAT=gpt-5.1
+OPENAI_MODEL_TTS=tts-1
+TTS_VOICE=alloy
+VOICE_RATE=1.0
+VOICE_PITCH=0.0

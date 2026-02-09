@@ -1,0 +1,62 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.env.*
+
+# C extensions
+*.pyd
+
+# Distribution / packaging
+/build/
+/dist/
+*.egg-info/
+
+# Virtual environments
+/venv/
+/.venv/
+venv/
+pyvenv.cfg
+
+# Site-packages from local python
+/Lib/site-packages/
+
+# PyInstaller output
+/dist/
+/build/
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln
+
+# Logs and databases
+*.log
+logs/
+
+# OS files
+desktop.ini
+Thumbs.db
+
+# Binary / large external assets
+/vendor/
+/tessdata/
+/models/*/snapshots/
+/models/*/refs/
+/models/*/desktop.ini
+
+# Common binary artifacts
+*.exe
+*.dll
+*.zip
+*.tar.gz
+*.7z
+
+# build artifacts
+/build_venv.bat
+
+# Do NOT ignore data/ by default (it contains canonical runtime state). If you want to ignore runtime files, modify manually.

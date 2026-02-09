@@ -1,0 +1,14 @@
+{
+  "dm_default": {
+    "label": "Direct Message",
+    "instructions": "Private conversation. Treat this as a one-on-one chat with Father or trusted contacts. Keep answers focused on the person writing, speak softly, and never leak server-only context unless they reference it.",
+    "allow_proactive": true,
+    "default_relationship": "acquaintance"
+  },
+  "sample_channel_id": {
+    "label": "Replace With Channel ID",
+    "instructions": "Add custom guidance for this Discord channel.",
+    "allow_proactive": true,
+    "default_relationship": "acquaintance"
+  }
+}

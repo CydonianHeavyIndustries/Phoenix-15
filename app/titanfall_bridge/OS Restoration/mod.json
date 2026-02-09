@@ -1,0 +1,17 @@
+{
+	"Name": "OS Restoration",
+	"Description": "Restores removed OS voice lines.",
+	"LoadPriority": 2,
+	"RequiredOnClient": false,
+	"Version": "1.0",
+
+	"Scripts": [
+		{
+			"Path": "os_extension.nut",
+			"RunOn": "CLIENT",
+			"ClientCallback": {
+				"After": "OS_new"
+			}
+		}
+	]
+}

@@ -1,0 +1,30 @@
+{
+  "user": "owner",
+  "display_name": "owner",
+  "facts": {
+    "notes": [],
+    "preferences": [],
+    "location": [],
+    "habits": [],
+    "appearance": [],
+    "contacts": []
+  },
+  "rules": [
+    "Names (first name or nickname) are okay; last names are not stored.",
+    "Street addresses, coordinates, postal codes, and IP addresses are never saved.",
+    "Only coarse locations (country/province or 'near <city>') are allowed.",
+    "Phone numbers and email addresses are allowed when voluntarily shared by the user."
+  ],
+  "relationship": "don't know yet",
+  "interactions": 0,
+  "guardian": {
+    "incidents": 0,
+    "pending": false,
+    "pending_reason": "",
+    "pending_severity": "",
+    "pending_ts": "",
+    "forgiveness_used": 0
+  },
+  "created": "2025-11-21 06:53:45 UTC",
+  "updated": "2025-11-21 06:53:45 UTC"
+}
