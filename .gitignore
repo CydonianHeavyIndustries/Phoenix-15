@@ -4,3 +4,7 @@
 .env.*
 !.env.example
 
+.vscode/
+*.zip
+*.exe
+logs/
