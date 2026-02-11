@@ -66,20 +66,22 @@ lb build
 
 ISO=""
 if [ -d "$LIVE_DIR" ]; then
-  ISO="$(find "$LIVE_DIR" -maxdepth 2 -type f -name "live-image-*.hybrid.iso" | head -n1 || true)"
+  ISO="$(find "$LIVE_DIR" -type f -name "live-image-*.hybrid.iso" | head -n1 || true)"
   if [ -z "$ISO" ]; then
-    ISO="$(find "$LIVE_DIR" -maxdepth 2 -type f -name "*.iso" | head -n1 || true)"
+    ISO="$(find "$LIVE_DIR" -type f -name "*.iso" | head -n1 || true)"
   fi
 fi
 if [ -z "$ISO" ]; then
-  ISO="$(find "$ROOT" -maxdepth 3 -type f -name "live-image-*.hybrid.iso" | head -n1 || true)"
+  ISO="$(find "$ROOT" -type f -name "live-image-*.hybrid.iso" | head -n1 || true)"
 fi
 if [ -z "$ISO" ]; then
-  ISO="$(find "$ROOT" -maxdepth 3 -type f -name "*.iso" | head -n1 || true)"
+  ISO="$(find "$ROOT" -type f -name "*.iso" | head -n1 || true)"
 fi
 if [ -z "$ISO" ]; then
   echo "[phoenix-os] ISO not found after build."
-  echo "[phoenix-os] Searched: $LIVE_DIR and $ROOT (maxdepth 3)."
+  echo "[phoenix-os] Searched: $LIVE_DIR and $ROOT (no maxdepth)."
+  echo "[phoenix-os] Dumping live-build output tree (depth 3):"
+  find "$LIVE_DIR" -maxdepth 3 -type f | sed 's/^/[phoenix-os] /'
   exit 1
 fi
 
