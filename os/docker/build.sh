@@ -35,10 +35,17 @@ if [ "${PHX_LB_CLEAN:-1}" = "1" ]; then
 fi
 
 lb config \
+  --mode debian \
   --distribution bookworm \
   --architectures amd64 \
   --binary-images iso-hybrid \
   --archive-areas "main contrib non-free-firmware" \
+  --mirror-bootstrap "http://deb.debian.org/debian" \
+  --mirror-binary "http://deb.debian.org/debian" \
+  --mirror-chroot "http://deb.debian.org/debian" \
+  --mirror-bootstrap-security "http://security.debian.org/debian-security" \
+  --mirror-binary-security "http://security.debian.org/debian-security" \
+  --debootstrap-options "--keyring=/usr/share/keyrings/debian-archive-keyring.gpg" \
   --debian-installer live \
   --bootappend-live "boot=live components username=phoenix hostname=phoenix-15 locales=en_US.UTF-8 keyboard-layouts=us"
 

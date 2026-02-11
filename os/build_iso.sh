@@ -43,8 +43,9 @@ else
     exit 126
   fi
   ls -l "$BUILD_SH" 2>/dev/null || true
-  if ! bash "$BUILD_SH"; then
-    code=$?
+  bash "$BUILD_SH"
+  code=$?
+  if [ "$code" -ne 0 ]; then
     echo "[phoenix-os] build.sh exited with $code"
     if [ "$code" -eq 126 ]; then
       echo "[phoenix-os] Attempting fallback: copy build.sh to /tmp and re-run."

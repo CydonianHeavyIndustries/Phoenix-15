@@ -63,6 +63,7 @@ sudo apt-get install -y \
   debootstrap \
   rsync \
   dos2unix \
+  debian-archive-keyring \
   ca-certificates \
   curl \
   git
