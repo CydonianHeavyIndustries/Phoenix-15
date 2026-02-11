@@ -18,6 +18,14 @@ CHOICE=$(zenity --list --title="Phoenix Control Center" --width=520 --height=420
   "App Manager" \
   "Mail" \
   "Update from USB Zip" \
+  "Snapshots / Rollback" \
+  "Boot Health" \
+  "Self Repair" \
+  "Dependency Locker" \
+  "USB Trust List" \
+  "State Profiles" \
+  "Issue Summary" \
+  "Security Baseline" \
   "Security Center" \
   "Integrity Check" \
   "Offline Docs" \
@@ -38,6 +46,14 @@ case "$CHOICE" in
   "App Manager") /usr/local/bin/phoenix-os-control.sh apps ;;
   "Mail") /usr/local/bin/phoenix-os-control.sh mail ;;
   "Update from USB Zip") /usr/local/bin/phoenix-os-control.sh update ;;
+  "Snapshots / Rollback") /usr/local/bin/phoenix-os-control.sh snapshots ;;
+  "Boot Health") /usr/local/bin/phoenix-os-control.sh boot-health ;;
+  "Self Repair") /usr/local/bin/phoenix-os-control.sh self-repair ;;
+  "Dependency Locker") /usr/local/bin/phoenix-os-control.sh dependency-lock ;;
+  "USB Trust List") /usr/local/bin/phoenix-os-control.sh usb-trust ;;
+  "State Profiles") /usr/local/bin/phoenix-os-control.sh profiles ;;
+  "Issue Summary") /usr/local/bin/phoenix-os-control.sh issue-summary ;;
+  "Security Baseline") /usr/local/bin/phoenix-os-control.sh security-baseline ;;
   "Security Center") /usr/local/bin/phoenix-os-control.sh security ;;
   "Integrity Check") /usr/local/bin/phoenix-os-control.sh integrity ;;
   "Offline Docs") /usr/local/bin/phoenix-os-control.sh docs ;;

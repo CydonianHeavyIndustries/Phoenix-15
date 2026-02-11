@@ -43,6 +43,30 @@ case "$ACTION" in
   update|usbupdate)
     open_cmd /usr/local/bin/phoenix-update-from-usb.sh && exit 0
     ;;
+  snapshots|rollback)
+    open_cmd /usr/local/bin/phoenix-snapshot.sh && exit 0
+    ;;
+  boot-health|health|boot)
+    open_cmd /usr/local/bin/phoenix-boot-health.sh && exit 0
+    ;;
+  self-repair|repair|fix)
+    open_cmd /usr/local/bin/phoenix-self-repair.sh && exit 0
+    ;;
+  dependency-lock|lock|deps)
+    open_cmd /usr/local/bin/phoenix-dependency-lock.sh && exit 0
+    ;;
+  usb-trust|usb)
+    open_cmd /usr/local/bin/phoenix-usb-trust.sh && exit 0
+    ;;
+  profiles|state|mode)
+    open_cmd /usr/local/bin/phoenix-state-profiles.sh && exit 0
+    ;;
+  issue-summary|summary|issues)
+    open_cmd /usr/local/bin/phoenix-issue-summary.sh && exit 0
+    ;;
+  security-baseline|baseline)
+    open_cmd /usr/local/bin/phoenix-security-baseline.sh && exit 0
+    ;;
   security|antivirus|firewall|protect)
     open_cmd /usr/local/bin/phoenix-security-center.sh && exit 0
     ;;

@@ -63,3 +63,6 @@ zlib1g
 libfreetype6
 efibootmgr
 calamares
+usbutils
+unattended-upgrades
+power-profiles-daemon
