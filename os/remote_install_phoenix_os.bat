@@ -84,9 +84,12 @@ set "TARGET_DIR=%PHX_TARGET_DIR%"
 if not "%TARGET_DIR%"=="" echo Target workspace: %TARGET_DIR% (from PHX_TARGET_DIR)
 if "%TARGET_DIR%"=="" set /p TARGET_DIR=Target workspace [~/Phoenix-15]: 
 if "%TARGET_DIR%"=="" set "TARGET_DIR=~/Phoenix-15"
+set "TARGET_DIR_REMOTE=%TARGET_DIR%"
 set "TARGET_DIR_COPY=%TARGET_DIR%"
 if "%TARGET_DIR%"=="~" set "TARGET_DIR_COPY=/home/%TARGET_USER%"
 if "%TARGET_DIR:~0,2%"=="~/" set "TARGET_DIR_COPY=/home/%TARGET_USER%/%TARGET_DIR:~2%"
+if "%TARGET_DIR%"=="~" set "TARGET_DIR_REMOTE=/home/%TARGET_USER%"
+if "%TARGET_DIR:~0,2%"=="~/" set "TARGET_DIR_REMOTE=/home/%TARGET_USER%/%TARGET_DIR:~2%"
 
 echo.
 echo [1/5] Testing SSH connectivity...
@@ -104,7 +107,7 @@ echo [2/5] Writing remote setup script...
   echo set -euo pipefail
   echo REPO_URL='%REPO_URL%'
   echo BRANCH='%BRANCH%'
-  echo TARGET_DIR='%TARGET_DIR%'
+  echo TARGET_DIR='%TARGET_DIR_REMOTE%'
   echo echo "[phoenix] Updating apt..."
   echo sudo apt-get update
   echo sudo apt-get install -y git curl ca-certificates rsync dos2unix live-build debootstrap xorriso syslinux grub-pc-bin grub-efi-amd64-bin mtools dosfstools squashfs-tools
@@ -114,8 +117,10 @@ echo [2/5] Writing remote setup script...
   echo cd "$TARGET_DIR"
   echo git sparse-checkout set os
   echo bash os/bootstrap_iso_workspace.sh --force --target "$TARGET_DIR" --branch "$BRANCH" --repo "$REPO_URL"
+  echo if [ ! -f "$TARGET_DIR/os/build_iso_ubuntu.sh" ]; then echo "[phoenix] Missing build script: $TARGET_DIR/os/build_iso_ubuntu.sh"; exit 1; fi
+  echo ls -l "$TARGET_DIR/os/build_iso_ubuntu.sh" ^| cat
   echo echo "[phoenix] Running ISO build..."
-  echo bash os/build_iso_ubuntu.sh
+  echo bash "$TARGET_DIR/os/build_iso_ubuntu.sh"
   echo echo "[phoenix] Build complete."
   echo echo "[phoenix] ISO path: $TARGET_DIR/os/out/phoenix-15.iso"
 ) > "%REMOTE_SCRIPT%"
@@ -137,7 +142,9 @@ echo [4/5] Running remote setup/build (you may be prompted for sudo password)...
 ssh -tt "%TARGET_USER%@%TARGET_HOST%" "sed -i 's/\r$//' ~/phoenix_remote_setup.sh 2>/dev/null || true; chmod +x ~/phoenix_remote_setup.sh && bash ~/phoenix_remote_setup.sh"
 if errorlevel 1 (
   echo [ERROR] Remote build failed. Check remote logs:
-  echo        %TARGET_DIR%/os/out/build-iso.log
+  echo        %TARGET_DIR_REMOTE%/os/out/build-iso.log
+  echo [INFO] Showing remote build log tail if available...
+  ssh "%TARGET_USER%@%TARGET_HOST%" "tail -n 120 %TARGET_DIR_REMOTE%/os/out/build-iso.log 2>/dev/null || echo '[phoenix] build-iso.log not found'"
   goto :fail
 )
 
