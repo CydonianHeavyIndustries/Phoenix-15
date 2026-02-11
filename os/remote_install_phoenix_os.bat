@@ -57,27 +57,32 @@ if errorlevel 1 (
 )
 
 echo.
-set "TARGET_HOST="
-set /p TARGET_HOST=Target Ubuntu IP or hostname: 
+set "TARGET_HOST=%PHX_TARGET_HOST%"
+if not "%TARGET_HOST%"=="" echo Target Ubuntu IP or hostname: %TARGET_HOST% (from PHX_TARGET_HOST)
+if "%TARGET_HOST%"=="" set /p TARGET_HOST=Target Ubuntu IP or hostname: 
 if "%TARGET_HOST%"=="" (
   echo [ERROR] Target host is required.
   goto :fail
 )
 
-set "TARGET_USER="
-set /p TARGET_USER=Target SSH user [ubuntu]: 
+set "TARGET_USER=%PHX_TARGET_USER%"
+if not "%TARGET_USER%"=="" echo Target SSH user: %TARGET_USER% (from PHX_TARGET_USER)
+if "%TARGET_USER%"=="" set /p TARGET_USER=Target SSH user [ubuntu]: 
 if "%TARGET_USER%"=="" set "TARGET_USER=ubuntu"
 
-set "REPO_URL="
-set /p REPO_URL=Repo URL [https://github.com/CydonianHeavyIndustries/Phoenix-15.git]: 
+set "REPO_URL=%PHX_REPO_URL%"
+if not "%REPO_URL%"=="" echo Repo URL: %REPO_URL% (from PHX_REPO_URL)
+if "%REPO_URL%"=="" set /p REPO_URL=Repo URL [https://github.com/CydonianHeavyIndustries/Phoenix-15.git]: 
 if "%REPO_URL%"=="" set "REPO_URL=https://github.com/CydonianHeavyIndustries/Phoenix-15.git"
 
-set "BRANCH="
-set /p BRANCH=Branch [main]: 
+set "BRANCH=%PHX_BRANCH%"
+if not "%BRANCH%"=="" echo Branch: %BRANCH% (from PHX_BRANCH)
+if "%BRANCH%"=="" set /p BRANCH=Branch [main]: 
 if "%BRANCH%"=="" set "BRANCH=main"
 
-set "TARGET_DIR="
-set /p TARGET_DIR=Target workspace [~/Phoenix-15]: 
+set "TARGET_DIR=%PHX_TARGET_DIR%"
+if not "%TARGET_DIR%"=="" echo Target workspace: %TARGET_DIR% (from PHX_TARGET_DIR)
+if "%TARGET_DIR%"=="" set /p TARGET_DIR=Target workspace [~/Phoenix-15]: 
 if "%TARGET_DIR%"=="" set "TARGET_DIR=~/Phoenix-15"
 set "TARGET_DIR_COPY=%TARGET_DIR%"
 if "%TARGET_DIR%"=="~" set "TARGET_DIR_COPY=/home/%TARGET_USER%"
