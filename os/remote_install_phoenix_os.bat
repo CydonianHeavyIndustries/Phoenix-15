@@ -134,7 +134,7 @@ if errorlevel 1 (
 del /q "%REMOTE_SCRIPT%" >nul 2>&1
 
 echo [4/5] Running remote setup/build (you may be prompted for sudo password)...
-ssh -tt "%TARGET_USER%@%TARGET_HOST%" "chmod +x ~/phoenix_remote_setup.sh && bash ~/phoenix_remote_setup.sh"
+ssh -tt "%TARGET_USER%@%TARGET_HOST%" "sed -i 's/\r$//' ~/phoenix_remote_setup.sh 2>/dev/null || true; chmod +x ~/phoenix_remote_setup.sh && bash ~/phoenix_remote_setup.sh"
 if errorlevel 1 (
   echo [ERROR] Remote build failed. Check remote logs:
   echo        %TARGET_DIR%/os/out/build-iso.log
