@@ -1,7 +1,29 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+SRC_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT="$SRC_ROOT"
+
+if [ -z "${PHX_BUILD_RELOCATED:-}" ] && [[ "$SRC_ROOT" == /mnt/* ]]; then
+  export PHX_BUILD_RELOCATED=1
+  WORK_ROOT="${PHX_BUILD_ROOT:-$HOME/phoenix-build}"
+  echo "[phoenix-os] Detected Windows mount ($SRC_ROOT). Relocating build to $WORK_ROOT ..."
+  rm -rf "$WORK_ROOT"
+  mkdir -p "$WORK_ROOT/app" "$WORK_ROOT/os"
+  rsync -a --delete \
+    --exclude "node_modules/" \
+    --exclude "__pycache__/" \
+    --exclude "*.pyc" \
+    --exclude ".pytest_cache/" \
+    --exclude ".mypy_cache/" \
+    --exclude ".ruff_cache/" \
+    --exclude ".cache/" \
+    --exclude "logs/" \
+    "$SRC_ROOT/app/" "$WORK_ROOT/app/"
+  rsync -a --delete "$SRC_ROOT/os/" "$WORK_ROOT/os/"
+  exec bash "$WORK_ROOT/os/build_iso_ubuntu.sh"
+fi
+
 LOG_DIR="$ROOT/os/out"
 RUN_TS="$(date -u +"%Y%m%dT%H%M%SZ" 2>/dev/null || date +"%Y%m%d_%H%M%S")"
 LOG_FILE="$LOG_DIR/build-iso-ubuntu-$RUN_TS.log"
@@ -12,6 +34,7 @@ exec > >(tee -a "$LOG_FILE") 2>&1
 trap 'code=$?; echo "[phoenix-os] Ubuntu build failed (exit $code) at line $LINENO."; exit $code' ERR
 
 echo "[phoenix-os] Ubuntu build helper started: $(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date)"
+echo "[phoenix-os] Root: $ROOT"
 echo "[phoenix-os] Log file: $LOG_FILE"
 
 if ! command -v apt-get >/dev/null 2>&1; then
