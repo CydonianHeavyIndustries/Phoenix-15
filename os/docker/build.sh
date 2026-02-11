@@ -43,10 +43,6 @@ lb config \
   --mirror-bootstrap "http://deb.debian.org/debian" \
   --mirror-binary "http://deb.debian.org/debian" \
   --mirror-chroot "http://deb.debian.org/debian" \
-  --mirror-bootstrap-security "http://security.debian.org/debian-security" \
-  --mirror-binary-security "http://security.debian.org/debian-security" \
-  --debootstrap-options "--keyring=/usr/share/keyrings/debian-archive-keyring.gpg" \
-  --debian-installer live \
   --bootappend-live "boot=live components username=phoenix hostname=phoenix-15 locales=en_US.UTF-8 keyboard-layouts=us"
 
 echo "[phoenix-os] Staging app into live-build overlay (tarball)..."
