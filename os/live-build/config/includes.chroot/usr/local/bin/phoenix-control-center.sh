@@ -16,6 +16,8 @@ CHOICE=$(zenity --list --title="Phoenix Control Center" --width=520 --height=420
   "Power" \
   "Time & Language" \
   "App Manager" \
+  "Mail" \
+  "Update from USB Zip" \
   "Game Server" \
   "File Manager" \
   "Performance" \
@@ -30,6 +32,8 @@ case "$CHOICE" in
   "Power") /usr/local/bin/phoenix-os-control.sh power ;;
   "Time & Language") /usr/local/bin/phoenix-os-control.sh time ;;
   "App Manager") /usr/local/bin/phoenix-os-control.sh apps ;;
+  "Mail") /usr/local/bin/phoenix-os-control.sh mail ;;
+  "Update from USB Zip") /usr/local/bin/phoenix-os-control.sh update ;;
   "Game Server") /usr/local/bin/phoenix-os-control.sh gameserver ;;
   "File Manager") /usr/local/bin/phoenix-os-control.sh files ;;
   "Performance") /usr/local/bin/phoenix-os-control.sh performance ;;

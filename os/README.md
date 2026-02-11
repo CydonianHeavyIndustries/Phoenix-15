@@ -71,5 +71,6 @@ First-boot UX notes are captured in:
 - Hardware balance policy: `/etc/phoenix/hardware_policy.json` (default `gpu_mode: balanced`).
 - App downloads: `Phoenix App Downloader` launcher or `/usr/local/bin/phoenix-app-download.sh`.
 - Game server helper: `/usr/local/bin/phoenix-game-server.sh` (SteamCMD install + templates).
+- USB zip updates: `/usr/local/bin/phoenix-update-from-usb.sh` (Apply app updates from a zip on USB).
 - System control: `Phoenix Control Center` launcher or `/usr/local/bin/phoenix-control-center.sh`.
 - LLM bootstrap: `/usr/local/bin/phoenix-firstboot-llm.sh` (first boot), model from `OLLAMA_BOOT_MODEL` in `/etc/phoenix/phoenix.env`.

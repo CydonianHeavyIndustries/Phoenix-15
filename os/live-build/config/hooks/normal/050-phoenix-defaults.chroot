@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+cat >/etc/xdg/mimeapps.list <<'EOF'
+[Default Applications]
+text/html=firefox-esr.desktop
+x-scheme-handler/http=firefox-esr.desktop
+x-scheme-handler/https=firefox-esr.desktop
+x-scheme-handler/about=firefox-esr.desktop
+x-scheme-handler/unknown=firefox-esr.desktop
+EOF

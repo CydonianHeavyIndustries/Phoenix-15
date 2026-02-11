@@ -40,6 +40,12 @@ case "$ACTION" in
   apps|appmanager|installer)
     open_cmd synaptic && exit 0
     ;;
+  update|usbupdate)
+    open_cmd /usr/local/bin/phoenix-update-from-usb.sh && exit 0
+    ;;
+  mail|email)
+    open_cmd thunderbird && exit 0
+    ;;
   gameserver|game|server)
     open_cmd /usr/local/bin/phoenix-game-server.sh && exit 0
     ;;

@@ -6,6 +6,8 @@ network-manager
 network-manager-gnome
 udisks2
 chromium
+firefox-esr
+thunderbird
 xorg
 x11-xserver-utils
 sudo
@@ -14,6 +16,7 @@ rsync
 curl
 ca-certificates
 jq
+unzip
 flatpak
 xdg-utils
 zenity

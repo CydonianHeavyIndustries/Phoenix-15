@@ -12,6 +12,13 @@ for i in $(seq 1 60); do
   sleep 1
 done
 
+if command -v firefox-esr >/dev/null 2>&1; then
+  exec /usr/bin/firefox-esr --kiosk "$URL"
+fi
+if command -v firefox >/dev/null 2>&1; then
+  exec /usr/bin/firefox --kiosk "$URL"
+fi
+
 exec /usr/bin/chromium \
   --kiosk \
   --app="$URL" \
