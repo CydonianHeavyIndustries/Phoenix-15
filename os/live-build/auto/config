@@ -10,7 +10,6 @@ if [ -n "${PHX_LB_CONFIG_RUNNING:-}" ] || [ -f "$LOCK_FILE" ]; then
 fi
 export PHX_LB_CONFIG_RUNNING=1
 touch "$LOCK_FILE"
-trap 'rm -f "$LOCK_FILE"' EXIT
 
 lb config \
   --distribution bookworm \

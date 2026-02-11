@@ -2,4 +2,5 @@
 set -e
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 cd "$SCRIPT_DIR/.."
+rm -f "$SCRIPT_DIR/.phx_lb_config_running" 2>/dev/null || true
 lb clean --purge
