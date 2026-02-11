@@ -45,7 +45,7 @@ pipewire-audio
 pipewire-pulse
 wireplumber
 pavucontrol
-libasound2
+libasound2t64
 libasound2-dev
 libsndfile1
 portaudio19-dev
@@ -58,7 +58,7 @@ python3-dev
 build-essential
 libffi-dev
 libssl-dev
-libjpeg62-turbo
+libjpeg-turbo8
 zlib1g
 libfreetype6
 efibootmgr
