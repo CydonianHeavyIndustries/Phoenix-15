@@ -49,6 +49,35 @@ echo "[phoenix-os] Ubuntu build helper started: $(date -u +"%Y-%m-%dT%H:%M:%SZ" 
 echo "[phoenix-os] Root: $ROOT"
 echo "[phoenix-os] Log file: $LOG_FILE"
 
+MIN_FREE_KB="${PHX_MIN_BUILD_FREE_KB:-6291456}"
+FREE_KB="$(df -Pk "$ROOT" | awk 'NR==2 {print $4}')"
+if [ -n "$FREE_KB" ] && [ "$FREE_KB" -lt "$MIN_FREE_KB" ]; then
+  echo "[phoenix-os] Not enough free space for build at $ROOT."
+  echo "[phoenix-os] Free: ${FREE_KB}KB, required: ${MIN_FREE_KB}KB."
+  exit 1
+fi
+
+MISSING=0
+for required in \
+  "$ROOT/os/build_iso.sh" \
+  "$ROOT/os/docker/build.sh" \
+  "$ROOT/os/live-build/auto/config" \
+  "$ROOT/os/live-build/auto/build" \
+  "$ROOT/os/live-build/auto/clean" \
+  "$ROOT/app/server/server.py" \
+  "$ROOT/app/scripts/start_ui.py"
+do
+  if [ ! -f "$required" ]; then
+    echo "[phoenix-os] Missing required file: $required"
+    MISSING=1
+  fi
+done
+if [ "$MISSING" -ne 0 ]; then
+  echo "[phoenix-os] Build workspace is incomplete (often caused by failed git checkout)."
+  echo "[phoenix-os] Run: bash os/bootstrap_iso_workspace.sh --force"
+  exit 1
+fi
+
 if ! command -v apt-get >/dev/null 2>&1; then
   echo "[phoenix-os] apt-get not found. This helper targets Ubuntu/Debian."
   exit 1

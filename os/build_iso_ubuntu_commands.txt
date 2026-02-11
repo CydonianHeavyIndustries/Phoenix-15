@@ -1,8 +1,11 @@
 Ubuntu ISO build (Phoenix-15)
 
-1) Pull latest changes
+1) Clone/update a low-footprint workspace (recommended)
+rm -rf ~/Phoenix-15
+git clone --depth 1 --filter=blob:none --sparse https://github.com/CydonianHeavyIndustries/Phoenix-15.git ~/Phoenix-15
 cd ~/Phoenix-15
-git pull
+git sparse-checkout set os
+bash os/bootstrap_iso_workspace.sh --force
 
 2) Run the Ubuntu build helper
 bash ~/Phoenix-15/os/build_iso_ubuntu.sh

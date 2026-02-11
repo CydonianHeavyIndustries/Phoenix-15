@@ -21,7 +21,9 @@ This folder builds a bootable Ubuntu 24.04 (Noble) ISO that boots straight into 
 
 ## Build the ISO (WSL/Linux)
 1) Install Docker or live-build on WSL/Ubuntu.
-2) Run:
+2) Prepare a low-footprint workspace:
+   `bash os/bootstrap_iso_workspace.sh --force`
+3) Run:
    `bash os/build_iso_ubuntu.sh`
 
 ## Flash to USB
@@ -78,3 +80,8 @@ First-boot UX notes are captured in:
 - Network safe mode: `/usr/local/bin/phoenix-network-safe.sh`.
 - System control: `Phoenix Control Center` launcher or `/usr/local/bin/phoenix-control-center.sh`.
 - LLM bootstrap: `/usr/local/bin/phoenix-firstboot-llm.sh` (first boot), model from `OLLAMA_BOOT_MODEL` in `/etc/phoenix/phoenix.env`.
+
+## Troubleshooting
+- If `git clone` reports many `unable to write file` errors, the checkout failed before build started.
+- Run a sparse bootstrap instead of a full checkout:
+  `git clone --depth 1 --filter=blob:none --sparse https://github.com/CydonianHeavyIndustries/Phoenix-15.git ~/Phoenix-15 && cd ~/Phoenix-15 && git sparse-checkout set os && bash os/bootstrap_iso_workspace.sh --force`

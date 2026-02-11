@@ -4,10 +4,15 @@ Phoenix-15 ISO Build (Ubuntu Live USB)
 sudo apt update
 sudo apt install -y live-build debootstrap xorriso syslinux grub-pc-bin grub-efi-amd64-bin mtools dosfstools squashfs-tools rsync curl ca-certificates git
 
-2) Clone + build:
-git clone https://github.com/CydonianHeavyIndustries/Phoenix-15.git
-cd Phoenix-15
+2) Clone/update workspace (low-footprint, recommended):
+rm -rf ~/Phoenix-15
+git clone --depth 1 --filter=blob:none --sparse https://github.com/CydonianHeavyIndustries/Phoenix-15.git ~/Phoenix-15
+cd ~/Phoenix-15
+git sparse-checkout set os
+bash os/bootstrap_iso_workspace.sh --force
+
+3) Build:
 bash os/build_iso_ubuntu.sh
 
-3) Output ISO:
+4) Output ISO:
 os/out/phoenix-15.iso
