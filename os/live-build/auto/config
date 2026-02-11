@@ -1,6 +1,11 @@
 #!/bin/sh
 set -e
 
+# Allow callers to skip auto/config when configuration is already done.
+if [ -n "${PHX_LB_SKIP_AUTO_CONFIG:-}" ]; then
+  exit 0
+fi
+
 # Prevent recursive auto/config execution when lb config re-invokes auto/config.
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 cd "$SCRIPT_DIR/.."

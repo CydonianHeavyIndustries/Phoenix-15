@@ -33,6 +33,7 @@ sudo apt-get install -y \
   git
 
 echo "[phoenix-os] Ensuring scripts are executable..."
+dos2unix "$ROOT/os/build_iso.sh" "$ROOT/os/docker/build.sh" "$ROOT/os/live-build/auto/config" "$ROOT/os/live-build/auto/build" "$ROOT/os/live-build/auto/clean" 2>/dev/null || true
 chmod +x "$ROOT/os/build_iso.sh" "$ROOT/os/docker/build.sh" 2>/dev/null || true
 chmod +x "$ROOT/os/live-build/auto/config" "$ROOT/os/live-build/auto/build" "$ROOT/os/live-build/auto/clean" 2>/dev/null || true
 find "$ROOT/os/live-build/config/hooks" -type f -name "*.chroot" -exec chmod +x {} \; 2>/dev/null || true

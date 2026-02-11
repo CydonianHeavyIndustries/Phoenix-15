@@ -14,12 +14,13 @@ chmod +x auto/config auto/build auto/clean || true
 find "$LIVE_DIR/config/hooks" -type f -name "*.chroot" -exec chmod +x {} \; 2>/dev/null || true
 find "$LIVE_DIR/config/includes.chroot/usr/local/bin" -type f -exec chmod +x {} \; 2>/dev/null || true
 rm -f "$LIVE_DIR/auto/.phx_lb_config_running" 2>/dev/null || true
+rm -rf "$LIVE_DIR/config/includes.chroot/opt/phoenix/app" 2>/dev/null || true
 
 if [ "${PHX_LB_CLEAN:-1}" = "1" ]; then
-  ./auto/clean || true
+  bash ./auto/clean || true
 fi
 
-./auto/config
+bash ./auto/config
 
 echo "[phoenix-os] Staging app into live-build overlay..."
 rm -rf "$STAGE_DIR"
@@ -53,7 +54,8 @@ rm -f "$STAGE_DIR/app/data/Bjorgsun26_memory_handoff.json" 2>/dev/null || true
 find "$LIVE_DIR/config/hooks" -type f -name "*.chroot" -exec chmod +x {} \; 2>/dev/null || true
 find "$LIVE_DIR/config/includes.chroot/usr/local/bin" -type f -exec chmod +x {} \; 2>/dev/null || true
 
-./auto/build
+export PHX_LB_SKIP_AUTO_CONFIG=1
+bash ./auto/build
 
 ISO=""
 if [ -d "$LIVE_DIR" ]; then

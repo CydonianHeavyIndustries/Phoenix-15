@@ -16,6 +16,10 @@ trap 'code=$?; echo "[phoenix-os] Build failed (exit $code) at line $LINENO."; e
 echo "[phoenix-os] Build started: $(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date)"
 echo "[phoenix-os] Log file: $LOG_FILE"
 
+if command -v dos2unix >/dev/null 2>&1; then
+  dos2unix "$ROOT/os/docker/build.sh" "$ROOT/os/live-build/auto/config" "$ROOT/os/live-build/auto/build" "$ROOT/os/live-build/auto/clean" 2>/dev/null || true
+fi
+
 USE_DOCKER=1
 if [ "${PHX_NO_DOCKER:-0}" = "1" ]; then
   USE_DOCKER=0
