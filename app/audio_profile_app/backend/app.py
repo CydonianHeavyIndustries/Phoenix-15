@@ -171,6 +171,16 @@ class AudioCapture:
         self._last_bins = [-120.0] * bins
         self._last_rms = 0.0
         self._last_peak = 0.0
+        self._last_spectrum: List[Dict[str, float]] = []
+        self._last_main = 0.0
+        self._last_low = 0.0
+        self._last_high = 0.0
+        self._last_centroid = 0.0
+        self._last_rolloff = 0.0
+        self._last_duration = 0.0
+        self._last_peaks: List[Dict[str, float]] = []
+        self._last_band_energy: List[Dict[str, float]] = []
+        self._last_emotion = ""
         self._sample_rate = 48000.0
 
     def start(self, input_device: Optional[int], sample_rate: Optional[float] = None) -> None:
@@ -207,6 +217,22 @@ class AudioCapture:
                 "rms": float(self._last_rms),
                 "peak": float(self._last_peak),
                 "sample_rate": float(self._sample_rate),
+                "spectrum": list(self._last_spectrum),
+                "main_frequency_hz": float(self._last_main),
+                "lowest_frequency_hz": float(self._last_low),
+                "highest_frequency_hz": float(self._last_high),
+                "centroid_hz": float(self._last_centroid),
+                "rolloff_hz": float(self._last_rolloff),
+                "duration_sec": float(self._last_duration),
+                "sr": float(self._sample_rate),
+                "name": "Live input",
+                "channels": 1,
+                "analysis_blocks": 1,
+                "peaks": list(self._last_peaks),
+                "band_energy": list(self._last_band_energy),
+                "matched_emotions": [],
+                "suggested_emotion": self._last_emotion,
+                "live": True,
             }
 
     def _callback(self, indata: np.ndarray, frames: int, time_info: Dict[str, Any], status: sd.CallbackFlags) -> None:
@@ -222,12 +248,83 @@ class AudioCapture:
         window = np.hanning(len(mono))
         spectrum = np.fft.rfft(mono * window)
         mag = np.abs(spectrum)
+        freqs = np.fft.rfftfreq(len(mono), d=1.0 / self._sample_rate)
         mag_db = 20.0 * np.log10(np.maximum(mag, 1e-10))
         bins = compress_spectrum(mag_db, self._bins)
+        spectrum_bins: List[Dict[str, float]] = []
+        if mag_db.size:
+            step = max(1, len(freqs) // self._bins)
+            for idx in range(0, len(freqs), step):
+                chunk = mag_db[idx : idx + step]
+                if chunk.size == 0:
+                    continue
+                hz = float(np.mean(freqs[idx : idx + step]))
+                spectrum_bins.append({"hz": hz, "db": float(np.mean(chunk))})
+        peaks: List[Dict[str, float]] = []
+        if mag.size:
+            top_n = 5
+            idx = np.argsort(mag)[::-1][: top_n * 3]
+            for i in idx:
+                hz = float(freqs[i])
+                if hz <= 1.0:
+                    continue
+                peaks.append({"hz": hz, "amplitude": float(mag[i])})
+                if len(peaks) >= top_n:
+                    break
+        main_frequency = float(peaks[0]["hz"]) if peaks else 0.0
+        max_mag = float(np.max(mag)) if mag.size else 0.0
+        threshold = max_mag * 0.02
+        significant = freqs[(freqs >= 20.0) & (mag >= threshold)]
+        lowest_frequency = float(significant.min()) if significant.size else main_frequency
+        highest_frequency = float(significant.max()) if significant.size else main_frequency
+        if mag.sum() > 0:
+            centroid = float((freqs * mag).sum() / mag.sum())
+            cumulative = np.cumsum(mag)
+            rolloff_idx = np.where(cumulative >= 0.85 * mag.sum())[0]
+            rolloff = float(freqs[rolloff_idx[0]]) if rolloff_idx.size else main_frequency
+        else:
+            centroid = main_frequency
+            rolloff = main_frequency
+        bands = [
+            (20, 60, "sub"),
+            (60, 120, "bass"),
+            (120, 180, "low_mid"),
+            (180, 300, "mid"),
+            (300, 500, "upper_mid"),
+            (500, 1000, "presence"),
+            (1000, 4000, "brilliance"),
+        ]
+        band_energy: List[Dict[str, float]] = []
+        for lo, hi, label in bands:
+            mask = (freqs >= lo) & (freqs < hi)
+            energy = float(mag[mask].sum()) if mask.any() else 0.0
+            band_energy.append({"label": label, "lo": lo, "hi": hi, "energy": energy})
+        emotion = ""
+        if centroid:
+            if centroid < 200:
+                emotion = "calm"
+            elif centroid < 600:
+                emotion = "grounded"
+            elif centroid < 2000:
+                emotion = "focused"
+            elif centroid < 5000:
+                emotion = "energized"
+            else:
+                emotion = "airy"
         with self._lock:
             self._last_bins = bins
             self._last_rms = float(rms)
             self._last_peak = peak
+            self._last_spectrum = spectrum_bins
+            self._last_main = main_frequency
+            self._last_low = lowest_frequency
+            self._last_high = highest_frequency
+            self._last_centroid = centroid
+            self._last_rolloff = rolloff
+            self._last_duration = float(len(mono) / self._sample_rate) if self._sample_rate else 0.0
+            self._last_peaks = peaks
+            self._last_band_energy = band_energy
+            self._last_emotion = emotion
 
 
 class AudioState:

@@ -616,6 +616,40 @@ body[data-orb-state="dormant"] .orb-glow {
   min-height: 36px;
 }
 
+.freq-live {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(62, 242, 224, 0.18);
+  background: rgba(6, 12, 20, 0.45);
+}
+
+.freq-live-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.freq-live-status {
+  font-size: 0.75rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.freq-live-status.active {
+  color: var(--accent);
+}
+
+.freq-live-hint {
+  font-size: 0.7rem;
+  color: var(--muted);
+  opacity: 0.8;
+}
+
 .freq-chip {
   display: flex;
   flex-direction: column;

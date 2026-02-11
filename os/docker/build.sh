@@ -24,7 +24,17 @@ fi
 echo "[phoenix-os] Staging app into live-build overlay..."
 rm -rf "$STAGE_DIR"
 mkdir -p "$STAGE_DIR"
-rsync -a --delete "$ROOT/app/" "$STAGE_DIR/app/"
+RSYNC_EXCLUDES=(
+  --exclude "node_modules/"
+  --exclude "__pycache__/"
+  --exclude "*.pyc"
+  --exclude ".pytest_cache/"
+  --exclude ".mypy_cache/"
+  --exclude ".ruff_cache/"
+  --exclude ".cache/"
+  --exclude "logs/"
+)
+rsync -a --delete "${RSYNC_EXCLUDES[@]}" "$ROOT/app/" "$STAGE_DIR/app/"
 
 rm -f "$STAGE_DIR/app/.env" "$STAGE_DIR/app/.env."* 2>/dev/null || true
 rm -rf "$STAGE_DIR/app/logs" 2>/dev/null || true

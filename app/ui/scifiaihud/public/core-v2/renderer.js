@@ -449,6 +449,7 @@ const AUDIO_SETTING_KEYS = [
 ];
 const EMOTION_PROMPT_COOLDOWN_MS = 45000;
 const EMOTION_PROMPT_SNOOZE_MS = 8 * 60 * 1000;
+const LIVE_FREQ_POLL_MS = 350;
 const ORB_EMOTION_BANDS = [
   { id: "0-40", range: [0, 40], palette: "Blues" },
   { id: "41-90", range: [41, 90], palette: "viridis" },
@@ -672,6 +673,9 @@ const state = {
   freqFile: null,
   freqAnalysis: null,
   freqAnalyzing: false,
+  freqLiveActive: false,
+  freqLiveLastAt: 0,
+  freqLiveError: "",
   freqTagLastSaved: { hz: null, emotion: "" },
   orbAction: "",
   orbActionUntil: 0,
@@ -696,6 +700,8 @@ const state = {
 };
 
 const prompts = new Map();
+let freqLiveTimer = null;
+let freqLiveErrorAt = 0;
 const USB_COPY_PRESETS = {
   full: { usbIncludeApp: true, usbIncludeMemory: true, usbIncludeUserData: true },
   "ai-memory": { usbIncludeApp: false, usbIncludeMemory: true, usbIncludeUserData: false },
@@ -6986,11 +6992,12 @@ function classifyFrequencyError(error) {
   return { code: "PHX-FRQ-000", detail };
 }
 
-function renderFrequencyAnalysis(analysis) {
+function renderFrequencyAnalysis(analysis, options = {}) {
   if (!analysis) {
     clearFrequencyUI("Import an audio file to analyze.");
     return;
   }
+  const isLive = Boolean(options.live || analysis.live);
   safeText("freq-main", formatHz(analysis.main_frequency_hz));
   safeText("freq-low", formatHz(analysis.lowest_frequency_hz));
   safeText("freq-high", formatHz(analysis.highest_frequency_hz));
@@ -7000,22 +7007,23 @@ function renderFrequencyAnalysis(analysis) {
   safeText("freq-sr", formatSampleRate(analysis.sr));
   safeText("freq-emotion-suggest", analysis.suggested_emotion || "--");
 
-  const tagInput = $("freq-tag");
-  if (tagInput && !tagInput.value && analysis.main_frequency_hz) {
-    tagInput.value = Math.round(Number(analysis.main_frequency_hz) || 0) || "";
-  }
-  const emotionInput = $("freq-emotion");
-  if (emotionInput && !emotionInput.value && analysis.suggested_emotion) {
-    emotionInput.value = analysis.suggested_emotion;
-  }
-
   renderFrequencyChips(analysis);
   drawFrequencySpectrum(analysis.spectrum, {
     main: analysis.main_frequency_hz,
     lowest: analysis.lowest_frequency_hz,
     highest: analysis.highest_frequency_hz,
   });
-  saveFrequencyTag({ silent: true });
+  if (!isLive) {
+    const tagInput = $("freq-tag");
+    if (tagInput && !tagInput.value && analysis.main_frequency_hz) {
+      tagInput.value = Math.round(Number(analysis.main_frequency_hz) || 0) || "";
+    }
+    const emotionInput = $("freq-emotion");
+    if (emotionInput && !emotionInput.value && analysis.suggested_emotion) {
+      emotionInput.value = analysis.suggested_emotion;
+    }
+    saveFrequencyTag({ silent: true });
+  }
 }
 
 function readFrequencyTagInputs() {
@@ -7175,6 +7183,7 @@ async function runFrequencyAnalysis() {
   if (!requireUnlocked()) {
     return;
   }
+  stopLiveFrequency({ silent: true });
   const input = $("freq-import");
   const file = state.freqFile || (input && input.files && input.files[0]);
   if (!file) {
@@ -7242,6 +7251,79 @@ async function runFrequencyAnalysis() {
   }
 }
 
+function isFrequencyPanelVisible() {
+  return (
+    state.settings.showFrequency &&
+    (state.activeModule === "frequency" || state.activeModule === "all")
+  );
+}
+
+function updateFrequencyLiveStatus() {
+  const btn = $("freq-live-toggle");
+  const status = $("freq-live-status");
+  if (btn) {
+    btn.textContent = state.freqLiveActive ? "Stop Live" : "Start Live";
+  }
+  if (status) {
+    status.textContent = state.freqLiveActive ? "Live: scanning" : "Live: off";
+    status.classList.toggle("active", state.freqLiveActive);
+  }
+}
+
+async function pollLiveFrequency() {
+  if (!state.freqLiveActive) {
+    return;
+  }
+  if (!isFrequencyPanelVisible()) {
+    return;
+  }
+  try {
+    const snapshot = await api.audioSpectrum();
+    if (!snapshot || !Array.isArray(snapshot.spectrum)) {
+      throw new Error("Live spectrum unavailable.");
+    }
+    state.freqAnalysis = snapshot;
+    state.freqLiveLastAt = Date.now();
+    renderFrequencyAnalysis(snapshot, { live: true });
+  } catch (error) {
+    const now = Date.now();
+    if (now - freqLiveErrorAt > 8000) {
+      freqLiveErrorAt = now;
+      const detail = parseErrorMessage(error) || error.message || "Live scan failed.";
+      logFrequencyEvent("PHX-FRQ-201", detail, { stage: "live" });
+      toast(`Live scan failed: ${detail}`, "warn");
+    }
+  }
+}
+
+function startLiveFrequency() {
+  if (state.freqLiveActive) {
+    return;
+  }
+  state.freqLiveActive = true;
+  state.freqLiveLastAt = 0;
+  updateFrequencyLiveStatus();
+  logFrequencyEvent("PHX-FRQ-200", "Live frequency scan started.", { stage: "live" });
+  pollLiveFrequency();
+  freqLiveTimer = setInterval(pollLiveFrequency, LIVE_FREQ_POLL_MS);
+}
+
+function stopLiveFrequency(options = {}) {
+  const silent = Boolean(options && options.silent);
+  if (!state.freqLiveActive) {
+    return;
+  }
+  state.freqLiveActive = false;
+  if (freqLiveTimer) {
+    clearInterval(freqLiveTimer);
+    freqLiveTimer = null;
+  }
+  updateFrequencyLiveStatus();
+  if (!silent) {
+    logFrequencyEvent("PHX-FRQ-210", "Live frequency scan stopped.", { stage: "live" });
+  }
+}
+
 function initFrequencyHub() {
   on("freq-import", "change", (event) => {
     const file = event.target.files && event.target.files[0];
@@ -7274,6 +7356,16 @@ function initFrequencyHub() {
       saveFrequencyTag();
     }
   });
+  on("freq-live-toggle", "click", () => {
+    if (!requireUnlocked()) {
+      return;
+    }
+    if (state.freqLiveActive) {
+      stopLiveFrequency();
+    } else {
+      startLiveFrequency();
+    }
+  });
   window.addEventListener("resize", () => {
     if (state.freqAnalysis) {
       drawFrequencySpectrum(state.freqAnalysis.spectrum, {
@@ -7286,6 +7378,7 @@ function initFrequencyHub() {
     }
   });
   clearFrequencyUI("Import an audio file to analyze.");
+  updateFrequencyLiveStatus();
 }
 
 function initEmotionPrompt() {
