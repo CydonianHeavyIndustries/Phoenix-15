@@ -16,6 +16,6 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "Building Phoenix-15 ISO..."
-docker run --rm -e PHX_ROOT=/work -v "$repo:/work" $imageName /work/os/docker/build.sh
+docker run --rm -e PHX_ROOT=/work -v "${repo}:/work" $imageName /work/os/docker/build.sh
 
 Write-Host "Done. ISO output: os\\out\\phoenix-15.iso"

@@ -6,5 +6,11 @@ chmod +x /usr/local/bin/phoenix-mount-data.sh
 chmod +x /usr/local/bin/phoenix-storage-policy.sh
 chmod +x /usr/local/bin/phoenix-sync.sh
 chmod +x /usr/local/bin/phoenix-backend.sh
+chmod +x /usr/local/bin/phoenix-hw-balance.sh
 chmod +x /usr/local/bin/phoenix-ui.sh
+chmod +x /usr/local/bin/phoenix-disk-install.sh
+chmod +x /usr/local/bin/phoenix-app-download.sh
+chmod +x /usr/local/bin/phoenix-os-control.sh
+chmod +x /usr/local/bin/phoenix-control-center.sh
+chmod +x /usr/local/bin/phoenix-firstboot-llm.sh
 chmod 0440 /etc/sudoers.d/phoenix-power

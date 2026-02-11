@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Phoenix Control Center
+Exec=/usr/local/bin/phoenix-control-center.sh
+Icon=preferences-system
+Categories=Settings;System;
+Terminal=false

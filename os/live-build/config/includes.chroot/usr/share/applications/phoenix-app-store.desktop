@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Phoenix App Downloader
+Exec=xfce4-terminal -e "/usr/local/bin/phoenix-app-download.sh"
+Icon=system-software-install
+Categories=System;Utility;
+Terminal=true

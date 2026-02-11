@@ -528,6 +528,13 @@ def get_session_user() -> str:
     return SESSION_USER
 
 
+def _is_reserved_user(name: str) -> bool:
+    try:
+        return (name or "").strip().lower() in {"guest", "guests"}
+    except Exception:
+        return False
+
+
 # --- Token budget helpers ------------------------------------------------
 def set_token_budget(total: int) -> None:
     """Set/reset token budget for the current session."""
@@ -574,6 +581,8 @@ def get_token_stats() -> dict:
 
 def _is_registered_user(name: str) -> bool:
     try:
+        if _is_reserved_user(name):
+            return False
         data = _user_registry()
         users = data.get("users") or []
         return name.strip() in users
@@ -588,6 +597,8 @@ def _register_user(name: str) -> bool:
         name = (name or "").strip()
         if not name:
             return False
+        if _is_reserved_user(name):
+            return False
         base = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data"))
         os.makedirs(base, exist_ok=True)
         data = _user_registry()
@@ -597,6 +608,52 @@ def _register_user(name: str) -> bool:
         # Create per-user data dir for privacy
         udir = os.path.join(base, "users", name)
         os.makedirs(udir, exist_ok=True)
+        return True
+    except Exception:
+        return False
+
+
+def _list_registered_users() -> list[str]:
+    try:
+        data = _user_registry()
+        users = data.get("users") or []
+        return [u for u in users if isinstance(u, str) and not _is_reserved_user(u)]
+    except Exception:
+        return []
+
+
+def _unregister_user(name: str, purge: bool = False) -> bool:
+    try:
+        import os
+        import shutil
+
+        name = (name or "").strip()
+        if not name:
+            return False
+        owner = (OWNER_NAME or "").strip()
+        if owner and name.lower() == owner.lower():
+            return False
+        if name.lower() in {"father", "owner"}:
+            return False
+        data = _user_registry()
+        users = [u for u in (data.get("users") or []) if isinstance(u, str)]
+        if name in users:
+            users = [u for u in users if u != name]
+            data["users"] = users
+        ss = data.get("spark_serials") or {}
+        if name in ss:
+            ss.pop(name, None)
+            data["spark_serials"] = ss
+        creds = data.get("credentials") or {}
+        if name in creds:
+            creds.pop(name, None)
+            data["credentials"] = creds
+        _save_user_registry(data)
+        if purge:
+            base = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "users"))
+            target = os.path.join(base, name)
+            if os.path.isdir(target):
+                shutil.rmtree(target, ignore_errors=True)
         return True
     except Exception:
         return False
@@ -653,6 +710,60 @@ def _save_user_registry(data: dict) -> None:
             json.dump(data, f, indent=2)
     except Exception:
         pass
+
+
+def _set_user_password(name: str, password: str) -> bool:
+    try:
+        import base64
+        import hashlib
+        import secrets
+
+        name = (name or "").strip()
+        password = (password or "").strip()
+        if not name or not password:
+            return False
+        if _is_reserved_user(name):
+            return False
+        data = _user_registry()
+        if name not in (data.get("users") or []):
+            data.setdefault("users", []).append(name)
+        creds = data.setdefault("credentials", {})
+        salt = secrets.token_bytes(16)
+        digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, 200000)
+        creds[name] = {
+            "salt": base64.b64encode(salt).decode("utf-8"),
+            "hash": base64.b64encode(digest).decode("utf-8"),
+        }
+        _save_user_registry(data)
+        return True
+    except Exception:
+        return False
+
+
+def _verify_user_password(name: str, password: str) -> bool:
+    try:
+        import base64
+        import hashlib
+
+        name = (name or "").strip()
+        password = (password or "").strip()
+        if not name or not password:
+            return False
+        if _is_reserved_user(name):
+            return False
+        data = _user_registry()
+        creds = data.get("credentials") or {}
+        entry = creds.get(name) or {}
+        salt_b64 = entry.get("salt")
+        hash_b64 = entry.get("hash")
+        if not salt_b64 or not hash_b64:
+            return False
+        salt = base64.b64decode(salt_b64.encode("utf-8"))
+        expected = base64.b64decode(hash_b64.encode("utf-8"))
+        digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, 200000)
+        return digest == expected
+    except Exception:
+        return False
 
 
 def set_user_spark_serial(user: str, serial: int) -> bool:

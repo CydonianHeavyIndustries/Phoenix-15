@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 import atexit
 
 import base64
@@ -58,7 +58,7 @@ if str(_APP_ROOT) not in sys.path:
     sys.path.insert(0, str(_APP_ROOT))
 from email.mime.text import MIMEText
 from fastapi import FastAPI, HTTPException, Response, Header, Request, UploadFile, File, Body
-from fastapi.responses import StreamingResponse, HTMLResponse, JSONResponse, FileResponse
+from fastapi.responses import StreamingResponse, HTMLResponse, JSONResponse, FileResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import soundfile as sf
@@ -118,6 +118,16 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 LOG_DIR = CANONICAL_ROOT_PATH / "logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 BACKEND_LOCK = LOG_DIR / "backend.lock"
+OS_CONTROL_ENABLED = os.getenv("PHX_OS_CONTROL", "").strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
+OS_CONTROL_SCRIPT = Path("/usr/local/bin/phoenix-os-control.sh")
+AUTH_SESSION_TTL = int(os.getenv("PHX_AUTH_TTL", "43200"))
+AUTH_COOKIE_NAME = "phx_session"
+AUTH_SESSIONS: Dict[str, Dict[str, Any]] = {}
 
 
 def _write_backend_lock() -> None:
@@ -1263,6 +1273,70 @@ def _emit_alert(reason: str, detail: str | None = None, severity: str = "info"):
             )
         except Exception:
             pass
+
+
+def _create_auth_session(user: str) -> str:
+    token = secrets.token_urlsafe(32)
+    AUTH_SESSIONS[token] = {
+        "user": user,
+        "expires": time.time() + max(300, AUTH_SESSION_TTL),
+    }
+    return token
+
+
+def _get_auth_session(request: Request) -> Optional[Dict[str, Any]]:
+    try:
+        token = request.cookies.get(AUTH_COOKIE_NAME)
+    except Exception:
+        token = None
+    if not token:
+        return None
+    sess = AUTH_SESSIONS.get(token)
+    if not sess:
+        return None
+    if sess.get("expires", 0) < time.time():
+        AUTH_SESSIONS.pop(token, None)
+        return None
+    return sess
+
+
+def _require_auth_session(request: Request) -> Dict[str, Any]:
+    sess = _get_auth_session(request)
+    if not sess:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    return sess
+
+
+def _remote_login_page(message: str = "") -> str:
+    msg = f"<p style='color:#ff8f8f'>{html.escape(message)}</p>" if message else ""
+    return f"""
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Phoenix-15 Remote Login</title>
+    <style>
+      body {{ font-family: Arial, sans-serif; background:#0a121a; color:#e6f7ff; display:flex; align-items:center; justify-content:center; height:100vh; }}
+      .card {{ background:#0f1b26; padding:24px; border-radius:12px; width:320px; box-shadow:0 10px 30px rgba(0,0,0,0.4); }}
+      label {{ display:block; margin:12px 0 6px; }}
+      input {{ width:100%; padding:8px; border-radius:6px; border:1px solid #2b4b5f; background:#0a141d; color:#e6f7ff; }}
+      button {{ width:100%; margin-top:16px; padding:10px; background:#28e6d4; border:none; border-radius:8px; font-weight:bold; }}
+    </style>
+  </head>
+  <body>
+    <form class="card" method="post" action="/auth/login">
+      <h2>Phoenix-15</h2>
+      <p>Remote access requires login.</p>
+      {msg}
+      <label>Username</label>
+      <input name="user" autocomplete="username" />
+      <label>Password</label>
+      <input name="password" type="password" autocomplete="current-password" />
+      <button type="submit">Login</button>
+    </form>
+  </body>
+</html>
+"""
 
 
 def _read_file_safe(path: str) -> str:
@@ -3457,6 +3531,116 @@ def dev_access_verify(dev_key: str | None = Header(default=None)):
     return {"ok": True}
 
 
+class AuthLoginRequest(BaseModel):
+    user: str
+    password: str
+
+
+@app.post("/auth/login")
+async def auth_login(request: Request, response: Response):
+    payload: Dict[str, Any] = {}
+    try:
+        if request.headers.get("content-type", "").startswith("application/json"):
+            payload = await request.json()
+        else:
+            form = await request.form()
+            payload = {"user": form.get("user"), "password": form.get("password")}
+    except Exception:
+        payload = {}
+    user = (payload.get("user") or "").strip()
+    password = (payload.get("password") or "").strip()
+    if not user or not password:
+        return HTMLResponse(content=_remote_login_page("Username and password required."), status_code=401)
+    if user.lower() in {"guest", "guests"}:
+        return HTMLResponse(content=_remote_login_page("Guest access is disabled."), status_code=401)
+    try:
+        from runtime import startup as _startup  # type: ignore
+
+        ok = _startup._verify_user_password(user, password)
+    except Exception:
+        ok = False
+    if not ok:
+        return HTMLResponse(content=_remote_login_page("Invalid credentials."), status_code=401)
+    token = _create_auth_session(user)
+    response = RedirectResponse(url="/remote", status_code=303)
+    response.set_cookie(
+        AUTH_COOKIE_NAME,
+        token,
+        httponly=True,
+        samesite="Lax",
+    )
+    return response
+
+
+@app.post("/auth/logout")
+def auth_logout(request: Request, response: Response):
+    try:
+        token = request.cookies.get(AUTH_COOKIE_NAME)
+    except Exception:
+        token = None
+    if token:
+        AUTH_SESSIONS.pop(token, None)
+    response = JSONResponse({"ok": True})
+    response.delete_cookie(AUTH_COOKIE_NAME)
+    return response
+
+
+class AdminUserRequest(BaseModel):
+    name: str
+    password: Optional[str] = None
+    purge: bool = False
+
+
+@app.get("/admin/users")
+def admin_users(dev_key: str | None = Header(default=None)):
+    _ensure_dev(dev_key)
+    try:
+        from runtime import startup as _startup  # type: ignore
+
+        users = _startup._list_registered_users()
+    except Exception:
+        users = []
+    return {"users": users}
+
+
+@app.post("/admin/users/create")
+def admin_user_create(request: AdminUserRequest, dev_key: str | None = Header(default=None)):
+    _ensure_dev(dev_key)
+    name = (request.name or "").strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Name required")
+    if name.lower() in {"guest", "guests"}:
+        raise HTTPException(status_code=400, detail="Guest accounts are disabled")
+    try:
+        from runtime import startup as _startup  # type: ignore
+
+        ok = _startup._register_user(name)
+        if ok and request.password:
+            _startup._set_user_password(name, request.password)
+    except Exception:
+        ok = False
+    if not ok:
+        raise HTTPException(status_code=400, detail="Unable to create user")
+    return {"ok": True, "user": name}
+
+
+@app.post("/admin/users/delete")
+def admin_user_delete(request: AdminUserRequest, dev_key: str | None = Header(default=None)):
+    _ensure_dev(dev_key)
+    name = (request.name or "").strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Name required")
+    try:
+        from runtime import startup as _startup  # type: ignore
+
+        ok = _startup._unregister_user(name, purge=bool(request.purge))
+    except Exception:
+        ok = False
+    if not ok:
+        raise HTTPException(status_code=400, detail="Unable to delete user")
+    return {"ok": True, "user": name, "purge": bool(request.purge)}
+
+
 @app.get("/ollama/status")
 def ollama_status():
     try:
@@ -5144,6 +5328,52 @@ def settings_get():
     return settings_store.get()
 
 
+
+class OsLaunchRequest(BaseModel):
+    action: str
+
+
+@app.post("/os/launch")
+def os_launch(request: OsLaunchRequest):
+    if not OS_CONTROL_ENABLED:
+        raise HTTPException(status_code=403, detail="OS control disabled")
+    if sys.platform != "linux":
+        raise HTTPException(status_code=400, detail="OS control only available on Linux")
+    if not OS_CONTROL_SCRIPT.exists():
+        raise HTTPException(status_code=404, detail="OS control script missing")
+    action = (request.action or "").strip().lower()
+    allowed = {
+        "settings",
+        "audio",
+        "display",
+        "graphics",
+        "network",
+        "wifi",
+        "bluetooth",
+        "power",
+        "time",
+        "language",
+        "timezone",
+        "locale",
+        "files",
+        "folders",
+        "apps",
+        "appmanager",
+        "installer",
+        "performance",
+        "taskmanager",
+        "drives",
+        "storage",
+    }
+    if action not in allowed:
+        raise HTTPException(status_code=400, detail="Unsupported action")
+    try:
+        subprocess.Popen([str(OS_CONTROL_SCRIPT), action])
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+    return {"ok": True}
+
+
 @app.post("/settings/set")
 def settings_set(payload: Dict[str, Any]):
     performance_guard()
@@ -5198,42 +5428,45 @@ def remote_tunnel_stop():
 
 
 @app.get("/")
-def remote_root():
+def remote_root(request: Request):
     if not _remote_ui_enabled():
         return {"status": "ok", "message": "Remote UI disabled."}
+    if not _get_auth_session(request):
+        return HTMLResponse(content=_remote_login_page(), status_code=401)
     if not REMOTE_UI_DIST:
         raise HTTPException(status_code=404, detail="UI build not found")
     return FileResponse(str(REMOTE_UI_DIST / "index.html"))
 
 
 @app.get("/remote")
-def remote_root_alias():
-    return remote_root()
+def remote_root_alias(request: Request):
+    return remote_root(request)
 
 
 @app.get("/remote/{path:path}")
-def remote_path_alias(path: str):
-    return remote_root()
+def remote_path_alias(path: str, request: Request):
+    return remote_root(request)
 
 
 @app.get("/env-config.js")
-def remote_env_config():
+def remote_env_config(request: Request):
     if not _remote_ui_enabled():
         raise HTTPException(status_code=404, detail="Remote UI disabled")
+    _require_auth_session(request)
     user = os.getenv("BJORGSUN_USER", "Father")
-    pw = os.getenv("BJORGSUN_PASS", "")
     content = (
         "window.__BJ_CFG = "
-        + json.dumps({"user": user, "pass": pw, "apiBase": "/"})
+        + json.dumps({"user": user, "pass": "", "apiBase": "/"})
         + ";"
     )
     return Response(content=content, media_type="application/javascript")
 
 
 @app.get("/assets/{path:path}")
-def remote_assets(path: str):
+def remote_assets(path: str, request: Request):
     if not _remote_ui_enabled():
         raise HTTPException(status_code=404, detail="Remote UI disabled")
+    _require_auth_session(request)
     if not REMOTE_UI_DIST:
         raise HTTPException(status_code=404, detail="UI build not found")
     base = REMOTE_UI_DIST / "assets"
@@ -5750,3 +5983,4 @@ if __name__ == "__main__":
         reload=False,
         access_log=False,
     )
+

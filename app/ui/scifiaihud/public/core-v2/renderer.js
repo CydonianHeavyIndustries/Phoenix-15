@@ -323,6 +323,22 @@ function createWebApi() {
         headers: { "Content-Type": "application/json", "dev-key": key },
         body: "{}",
       }),
+    adminUsersList: (key) =>
+      request("/admin/users", {
+        headers: { "Content-Type": "application/json", "dev-key": key },
+      }),
+    adminUserCreate: (key, payload) =>
+      request("/admin/users/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "dev-key": key },
+        body: JSON.stringify(payload || {}),
+      }),
+    adminUserDelete: (key, payload) =>
+      request("/admin/users/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "dev-key": key },
+        body: JSON.stringify(payload || {}),
+      }),
     ollamaStatus: () => request("/ollama/status"),
     ollamaStart: () => request("/ollama/start", { method: "POST", body: "{}" }),
     audioHealth: () => request("/audio/api/health"),
@@ -569,6 +585,7 @@ const state = {
   activeUserId: "",
   userStore: { users: [], activeId: "" },
   adminUnlocked: false,
+  adminKey: "",
   orbState: "dormant",
   orbThought: "idle",
   orbFrequencyHz: null,
@@ -1398,6 +1415,31 @@ function setAdminStatus(message) {
   safeText("new-user-status", message || "Admin key required (DEV_ACCESS_KEY).");
 }
 
+function isReservedUserName(name) {
+  const key = (name || "").trim().toLowerCase();
+  return key === "guest" || key === "guests";
+}
+
+async function syncAdminPassword() {
+  const login = (state.settings.loginUser || "").trim();
+  const pass = state.settings.loginPass || "";
+  if (!login || !pass) {
+    return;
+  }
+  if (isReservedUserName(login)) {
+    return;
+  }
+  const ok = await ensureAdminUnlocked();
+  if (!ok) {
+    return;
+  }
+  try {
+    await api.adminUserCreate(state.adminKey, { name: login, password: pass });
+  } catch {
+    // ignore; admin key or backend may be offline
+  }
+}
+
 async function ensureAdminUnlocked() {
   if (state.adminUnlocked) {
     return true;
@@ -1410,6 +1452,7 @@ async function ensureAdminUnlocked() {
   try {
     await api.devAccessCheck(key);
     state.adminUnlocked = true;
+    state.adminKey = key;
     setAdminStatus("Admin verified.");
     toast("Admin verified.", "info");
     return true;
@@ -6133,6 +6176,9 @@ function wireSettings() {
     state.settings.loginPass = event.target.value;
     saveSettings();
   });
+  on("setting-login-pass", "change", () => {
+    syncAdminPassword();
+  });
   on("setting-usb-local-path", "input", (event) => {
     state.settings.usbLocalBootPath = event.target.value.trim();
     saveSettings();
@@ -6203,8 +6249,18 @@ function wireSettings() {
       toast("Password required.", "warn");
       return;
     }
+    if (isReservedUserName(username)) {
+      toast("Guest accounts are disabled.", "warn");
+      return;
+    }
     const ok = await ensureAdminUnlocked();
     if (!ok) {
+      return;
+    }
+    try {
+      await api.adminUserCreate(state.adminKey, { name: username, password });
+    } catch (error) {
+      toast("Admin user registration failed.", "warn");
       return;
     }
     const exists = state.userStore.users.some(
@@ -6241,6 +6297,55 @@ function wireSettings() {
     });
     toast("User created. Unlock to continue.", "info");
     closeUserModal();
+  });
+
+  on("delete-user-open", "click", async () => {
+    const active = getActiveUser();
+    if (!active) {
+      toast("No active user selected.", "warn");
+      return;
+    }
+    const ok = await ensureAdminUnlocked();
+    if (!ok) {
+      return;
+    }
+    const purge = Boolean($("delete-user-purge") && $("delete-user-purge").checked);
+    const label = active.settings?.loginUser || active.id;
+    if (!window.confirm(`Delete user "${label}"?`)) {
+      return;
+    }
+    try {
+      await api.adminUserDelete(state.adminKey, { name: label, purge });
+    } catch (error) {
+      toast("Admin delete failed.", "warn");
+      return;
+    }
+    state.userStore.users = state.userStore.users.filter((user) => user.id !== active.id);
+    if (state.userStore.users.length === 0) {
+      const fallbackId = "phoenix";
+      state.userStore.users = [
+        {
+          id: fallbackId,
+          settings: normalizeUserSettings({
+            loginUser: defaults.loginUser,
+            loginPass: defaults.loginPass,
+            aiName: defaults.aiName,
+          }),
+          createdAt: new Date().toISOString(),
+        },
+      ];
+      state.activeUserId = fallbackId;
+    } else if (state.activeUserId === active.id) {
+      state.activeUserId = state.userStore.users[0].id;
+    }
+    saveUserStore();
+    setActiveUser(state.activeUserId || state.userStore.users[0]?.id, {
+      lockMode: "lock",
+      persist: true,
+      renderHistory: true,
+      loadHistory: true,
+    });
+    toast("User deleted.", "info");
   });
 
   on("display-refresh", "click", () => {

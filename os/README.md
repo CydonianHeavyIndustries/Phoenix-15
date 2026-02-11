@@ -7,6 +7,7 @@ This folder builds a bootable Debian 12 (Bookworm) ISO that boots straight into 
 - Minimal desktop (XFCE + LightDM auto-login).
 - Phoenix-15 backend + UI server as systemd services.
 - Chromium kiosk launch as the primary interface.
+- Automatic hardware balancing (CPU affinity + GPU env hints) for backend/UI.
 - Optional installer (Calamares) for a wizard-style setup.
 - Optional data partition (`PHX_DATA`, exFAT) that Windows can read/write.
 - Internal disks are not mounted by default; opt-in via policy file.
@@ -54,9 +55,21 @@ to allow internal disk mounts.
 Calamares is included for a GUI install flow.
 It can be launched from the desktop menu as "Install Phoenix-15".
 
+## Full Disk Install (Wipe + Install)
+For a full wipe install from the live USB:
+```
+sudo phoenix-disk-install.sh --disk /dev/sdX --execute
+```
+Replace `/dev/sdX` with the target disk (FULL WIPE).
+
 First-boot UX notes are captured in:
 `os/FIRST_BOOT.md`
 
 ## Notes
 - This ISO is intended to be installed or run entirely from USB.
 - The Phoenix UI is the primary interface; desktop remains minimal.
+- Hardware balance policy: `/etc/phoenix/hardware_policy.json` (default `gpu_mode: balanced`).
+- App downloads: `Phoenix App Downloader` launcher or `/usr/local/bin/phoenix-app-download.sh`.
+- Game server helper: `/usr/local/bin/phoenix-game-server.sh` (SteamCMD install + templates).
+- System control: `Phoenix Control Center` launcher or `/usr/local/bin/phoenix-control-center.sh`.
+- LLM bootstrap: `/usr/local/bin/phoenix-firstboot-llm.sh` (first boot), model from `OLLAMA_BOOT_MODEL` in `/etc/phoenix/phoenix.env`.

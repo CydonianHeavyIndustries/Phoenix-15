@@ -1,0 +1,18 @@
+[Unit]
+Description=Phoenix-15 first boot LLM installer
+After=network-online.target graphical.target
+Wants=network-online.target
+ConditionPathExists=!/var/lib/phoenix/llm_installed
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/phoenix/phoenix.env
+ExecStart=/usr/local/bin/phoenix-firstboot-llm.sh
+TimeoutStartSec=0
+Restart=on-failure
+RestartSec=60
+StartLimitIntervalSec=600
+StartLimitBurst=3
+
+[Install]
+WantedBy=multi-user.target

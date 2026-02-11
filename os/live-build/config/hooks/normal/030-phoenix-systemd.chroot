@@ -8,3 +8,4 @@ systemctl enable phoenix-ui.service || true
 systemctl enable phoenix-data.service || true
 systemctl enable phoenix-sync.service || true
 systemctl enable phoenix-storage-policy.service || true
+systemctl enable phoenix-firstboot-llm.service || true

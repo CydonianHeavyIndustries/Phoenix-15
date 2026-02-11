@@ -1,0 +1,30 @@
+name: Build Phoenix-15 ISO
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "os/**"
+      - "app/**"
+      - ".github/workflows/build-phoenix-os.yml"
+
+jobs:
+  build-iso:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure scripts executable
+        run: |
+          chmod +x os/build_iso.sh os/docker/build.sh
+
+      - name: Build ISO (Docker)
+        run: |
+          bash os/build_iso.sh
+
+      - name: Upload ISO
+        uses: actions/upload-artifact@v4
+        with:
+          name: phoenix-15-iso
+          path: os/out/phoenix-15.iso
