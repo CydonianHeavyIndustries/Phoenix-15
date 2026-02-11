@@ -111,8 +111,7 @@ log "install_grub"
 mount --bind /dev /mnt/phoenix/dev
 mount --bind /proc /mnt/phoenix/proc
 mount --bind /sys /mnt/phoenix/sys
-chroot /mnt/phoenix /bin/sh -c "grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=Phoenix-15 || true"
-chroot /mnt/phoenix /bin/sh -c "grub-install --target=i386-pc $DISK || true"
+chroot /mnt/phoenix /bin/sh -c "phoenix-install-bootloader.sh || true"
 chroot /mnt/phoenix /bin/sh -c "update-grub || true"
 
 log "cleanup"

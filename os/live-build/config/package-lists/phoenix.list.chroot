@@ -64,7 +64,5 @@ zlib1g
 libfreetype6
 linux-image-amd64
 linux-headers-amd64
-grub-efi-amd64
-grub-pc
 efibootmgr
 calamares
