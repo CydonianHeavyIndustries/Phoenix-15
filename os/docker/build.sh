@@ -20,7 +20,16 @@ if [ "${PHX_LB_CLEAN:-1}" = "1" ]; then
   bash ./auto/clean || true
 fi
 
-bash ./auto/config
+export PHX_LB_SKIP_AUTO_CONFIG=1
+export PHX_LB_SKIP_AUTO_BUILD=1
+
+lb config \
+  --distribution bookworm \
+  --architectures amd64 \
+  --binary-images iso-hybrid \
+  --archive-areas "main contrib non-free-firmware" \
+  --debian-installer live \
+  --bootappend-live "boot=live components username=phoenix hostname=phoenix-15 locales=en_US.UTF-8 keyboard-layouts=us"
 
 echo "[phoenix-os] Staging app into live-build overlay (tarball)..."
 rm -rf "$STAGE_DIR"
@@ -53,8 +62,7 @@ tar -czf "$APP_TAR" \
 find "$LIVE_DIR/config/hooks" -type f -name "*.chroot" -exec chmod +x {} \; 2>/dev/null || true
 find "$LIVE_DIR/config/includes.chroot/usr/local/bin" -type f -exec chmod +x {} \; 2>/dev/null || true
 
-export PHX_LB_SKIP_AUTO_CONFIG=1
-bash ./auto/build
+lb build
 
 ISO=""
 if [ -d "$LIVE_DIR" ]; then

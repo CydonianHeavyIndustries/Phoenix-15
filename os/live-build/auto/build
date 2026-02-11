@@ -1,5 +1,11 @@
 #!/bin/sh
 set -e
+
+# Allow callers to skip auto/build when we run lb build directly.
+if [ -n "${PHX_LB_SKIP_AUTO_BUILD:-}" ]; then
+  exit 0
+fi
+
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 cd "$SCRIPT_DIR/.."
 lb build
