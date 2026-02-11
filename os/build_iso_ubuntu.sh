@@ -4,7 +4,19 @@ set -euo pipefail
 SRC_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 ROOT="$SRC_ROOT"
 
-if [ -z "${PHX_BUILD_RELOCATED:-}" ] && [[ "$SRC_ROOT" == /mnt/* ]]; then
+NEEDS_RELOCATE=0
+if [[ "$SRC_ROOT" == /mnt/* ]]; then
+  NEEDS_RELOCATE=1
+elif command -v findmnt >/dev/null 2>&1; then
+  if findmnt -no OPTIONS --target "$SRC_ROOT" 2>/dev/null | tr ',' '\n' | grep -q '^noexec$'; then
+    NEEDS_RELOCATE=1
+  fi
+elif command -v mountpoint >/dev/null 2>&1 && command -v mount >/dev/null 2>&1; then
+  MNT_LINE="$(mount | awk -v p="$SRC_ROOT" '$3==p {print $0}')"
+  echo "$MNT_LINE" | grep -q 'noexec' && NEEDS_RELOCATE=1 || true
+fi
+
+if [ -z "${PHX_BUILD_RELOCATED:-}" ] && [ "$NEEDS_RELOCATE" -eq 1 ]; then
   export PHX_BUILD_RELOCATED=1
   WORK_ROOT="${PHX_BUILD_ROOT:-$HOME/phoenix-build}"
   echo "[phoenix-os] Detected Windows mount ($SRC_ROOT). Relocating build to $WORK_ROOT ..."

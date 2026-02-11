@@ -16,6 +16,13 @@ fi
 export PHX_LB_CONFIG_RUNNING=1
 touch "$LOCK_FILE"
 
+# Guard against lb config re-invoking auto/config.
+if [ -n "${PHX_LB_CONFIG_GUARD:-}" ]; then
+  exit 0
+fi
+export PHX_LB_CONFIG_GUARD=1
+export PHX_LB_SKIP_AUTO_CONFIG=1
+
 lb config \
   --distribution bookworm \
   --architectures amd64 \

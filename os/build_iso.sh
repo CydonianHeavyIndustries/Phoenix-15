@@ -36,7 +36,25 @@ else
     exec sudo -E bash "$0"
   fi
   export PHX_ROOT="$ROOT"
-  bash "$ROOT/os/docker/build.sh"
+  BUILD_SH="$ROOT/os/docker/build.sh"
+  echo "[phoenix-os] Using build script: $BUILD_SH"
+  if [ ! -r "$BUILD_SH" ]; then
+    echo "[phoenix-os] ERROR: build.sh is not readable."
+    exit 126
+  fi
+  ls -l "$BUILD_SH" 2>/dev/null || true
+  if ! bash "$BUILD_SH"; then
+    code=$?
+    echo "[phoenix-os] build.sh exited with $code"
+    if [ "$code" -eq 126 ]; then
+      echo "[phoenix-os] Attempting fallback: copy build.sh to /tmp and re-run."
+      TMP_DIR="$(mktemp -d)"
+      cp "$BUILD_SH" "$TMP_DIR/build.sh"
+      bash "$TMP_DIR/build.sh"
+      exit $?
+    fi
+    exit "$code"
+  fi
 fi
 
 echo "[phoenix-os] Build log (latest): $LOG_LATEST"
