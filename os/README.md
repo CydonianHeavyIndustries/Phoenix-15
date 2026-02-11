@@ -22,7 +22,7 @@ This folder builds a bootable Debian 12 (Bookworm) ISO that boots straight into 
 ## Build the ISO (WSL/Linux)
 1) Install Docker or live-build on WSL.
 2) Run:
-   `bash os/build_iso.sh`
+   `sudo bash os/build_iso.sh`
 
 ## Flash to USB
 - Use Rufus or Balena Etcher to write `phoenix-15.iso` to the USB.
@@ -72,5 +72,8 @@ First-boot UX notes are captured in:
 - App downloads: `Phoenix App Downloader` launcher or `/usr/local/bin/phoenix-app-download.sh`.
 - Game server helper: `/usr/local/bin/phoenix-game-server.sh` (SteamCMD install + templates).
 - USB zip updates: `/usr/local/bin/phoenix-update-from-usb.sh` (Apply app updates from a zip on USB).
+- Integrity check: `/usr/local/bin/phoenix-integrity-check.sh`.
+- Offline docs: `/usr/local/bin/phoenix-offline-docs.sh`.
+- Network safe mode: `/usr/local/bin/phoenix-network-safe.sh`.
 - System control: `Phoenix Control Center` launcher or `/usr/local/bin/phoenix-control-center.sh`.
 - LLM bootstrap: `/usr/local/bin/phoenix-firstboot-llm.sh` (first boot), model from `OLLAMA_BOOT_MODEL` in `/etc/phoenix/phoenix.env`.

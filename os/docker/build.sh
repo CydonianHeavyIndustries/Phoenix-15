@@ -40,14 +40,25 @@ fi
 ./auto/config
 ./auto/build
 
-ISO="$(ls -1 live-image-*.hybrid.iso 2>/dev/null | head -n1 || true)"
+ISO=""
+if [ -d "$LIVE_DIR" ]; then
+  ISO="$(find "$LIVE_DIR" -maxdepth 2 -type f -name "live-image-*.hybrid.iso" | head -n1 || true)"
+  if [ -z "$ISO" ]; then
+    ISO="$(find "$LIVE_DIR" -maxdepth 2 -type f -name "*.iso" | head -n1 || true)"
+  fi
+fi
 if [ -z "$ISO" ]; then
-  ISO="$(ls -1 *.iso 2>/dev/null | head -n1 || true)"
+  ISO="$(find "$ROOT" -maxdepth 3 -type f -name "live-image-*.hybrid.iso" | head -n1 || true)"
+fi
+if [ -z "$ISO" ]; then
+  ISO="$(find "$ROOT" -maxdepth 3 -type f -name "*.iso" | head -n1 || true)"
 fi
 if [ -z "$ISO" ]; then
   echo "[phoenix-os] ISO not found after build."
+  echo "[phoenix-os] Searched: $LIVE_DIR and $ROOT (maxdepth 3)."
   exit 1
 fi
 
 cp -f "$ISO" "$OUT_DIR/phoenix-15.iso"
 echo "[phoenix-os] ISO written to $OUT_DIR/phoenix-15.iso"
+echo "[phoenix-os] Source ISO: $ISO"

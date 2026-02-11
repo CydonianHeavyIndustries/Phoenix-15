@@ -46,6 +46,15 @@ case "$ACTION" in
   mail|email)
     open_cmd thunderbird && exit 0
     ;;
+  integrity|check)
+    open_cmd /usr/local/bin/phoenix-integrity-check.sh && exit 0
+    ;;
+  docs|offline|help)
+    open_cmd /usr/local/bin/phoenix-offline-docs.sh && exit 0
+    ;;
+  network-safe|safemode|safe)
+    open_cmd /usr/local/bin/phoenix-network-safe.sh && exit 0
+    ;;
   gameserver|game|server)
     open_cmd /usr/local/bin/phoenix-game-server.sh && exit 0
     ;;

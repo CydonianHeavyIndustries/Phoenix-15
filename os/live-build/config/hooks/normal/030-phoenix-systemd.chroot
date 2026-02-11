@@ -9,3 +9,4 @@ systemctl enable phoenix-data.service || true
 systemctl enable phoenix-sync.service || true
 systemctl enable phoenix-storage-policy.service || true
 systemctl enable phoenix-firstboot-llm.service || true
+systemctl enable phoenix-network-safe.service || true

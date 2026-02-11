@@ -1,0 +1,11 @@
+[Unit]
+Description=Phoenix Network Safe Mode
+After=NetworkManager.service
+Wants=NetworkManager.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c '[ -f /etc/phoenix/network_safe_mode ] && /usr/local/bin/phoenix-network-safe.sh enable || true'
+
+[Install]
+WantedBy=multi-user.target

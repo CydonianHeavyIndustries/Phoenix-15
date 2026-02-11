@@ -10,6 +10,10 @@ if command -v docker >/dev/null 2>&1; then
   fi
   docker run --rm -e PHX_ROOT=/work -v "$ROOT:/work" "$IMAGE" /work/os/docker/build.sh
 else
+  if [ "$(id -u)" -ne 0 ]; then
+    echo "[phoenix-os] Live-build requires root. Re-running with sudo..."
+    exec sudo -E bash "$0"
+  fi
   export PHX_ROOT="$ROOT"
   bash "$ROOT/os/docker/build.sh"
 fi

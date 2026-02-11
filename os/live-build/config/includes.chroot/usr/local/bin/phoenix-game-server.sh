@@ -5,6 +5,7 @@ SERVER_ROOT="${PHX_SERVER_ROOT:-$HOME/PhoenixGameServers}"
 STEAMCMD_DIR="${HOME}/.local/share/steamcmd"
 STEAMCMD_BIN="${STEAMCMD_DIR}/steamcmd.sh"
 TEMPLATE_FILE="${SERVER_ROOT}/server-setup.txt"
+PROFILE_FILE="/usr/local/share/phoenix/server_profiles.txt"
 
 ensure_dirs() {
   mkdir -p "$SERVER_ROOT"
@@ -141,6 +142,71 @@ show_info() {
   echo "$1"
 }
 
+ensure_profiles() {
+  if [ -f "$PROFILE_FILE" ]; then
+    return 0
+  fi
+  mkdir -p "$(dirname "$PROFILE_FILE")"
+  cat >"$PROFILE_FILE" <<'EOF'
+Valheim Dedicated Server|896660|anonymous|Start: ./start_server.sh
+Team Fortress 2 Dedicated Server|232250|anonymous|Start: ./srcds_run -game tf +map ctf_2fort
+Project Zomboid Dedicated Server|380870|anonymous|Start: ./start-server.sh
+Terraria Dedicated Server|105600|anonymous|Start: ./start-server.sh
+Steam Dedicated Server (Custom App ID)|CUSTOM|anonymous|Start: see game docs
+Minecraft (Manual Install)|MANUAL||Start: java -jar server.jar
+EOF
+}
+
+install_profile() {
+  ensure_profiles
+  choice=$(zenity --list --title="Server Profiles" --width=640 --height=360 \
+    --column="Profile" --column="App ID" --column="Login" --column="Notes" \
+    $(awk -F'|' '{print $1, $2, $3, $4}' "$PROFILE_FILE"))
+  if [ -z "$choice" ]; then
+    return 0
+  fi
+  name="$(echo "$choice" | awk '{print $1}')"
+  appid="$(grep -F "$name|" "$PROFILE_FILE" | head -n1 | cut -d'|' -f2)"
+  login="$(grep -F "$name|" "$PROFILE_FILE" | head -n1 | cut -d'|' -f3)"
+  note="$(grep -F "$name|" "$PROFILE_FILE" | head -n1 | cut -d'|' -f4)"
+
+  if [ "$appid" = "MANUAL" ]; then
+    show_info "Manual server setup.\n$note\nFolder: $SERVER_ROOT"
+    open_folder || true
+    return 0
+  fi
+  if [ "$appid" = "CUSTOM" ]; then
+    appid=$(zenity --entry --title="Custom App ID" --text="Enter Steam App ID:" --width=420)
+    if [ -z "$appid" ]; then
+      return 0
+    fi
+  fi
+  ensure_steamcmd
+  dir=$(zenity --entry --title="Install Folder" --text="Folder name under $SERVER_ROOT:" --width=420)
+  if [ -z "$dir" ]; then
+    return 0
+  fi
+  login_prompt=$login
+  if [ -z "$login_prompt" ]; then
+    login_prompt="anonymous"
+  fi
+  if [ "$login_prompt" = "anonymous" ]; then
+    user="anonymous"
+    pass=""
+  else
+    user=$(zenity --entry --title="Steam Login" --text="Steam username:" --width=420)
+    if [ -z "$user" ]; then
+      return 0
+    fi
+    pass=$(zenity --entry --title="Steam Password" --hide-text --text="Steam password (leave blank if not needed):" --width=420)
+  fi
+  target="${SERVER_ROOT}/${dir}"
+  mkdir -p "$target"
+  cmd="\"$STEAMCMD_BIN\" +force_install_dir \"$target\" +login $user $pass +app_update $appid validate +quit"
+  run_in_terminal "$cmd"
+  show_info "Installed $name.\n$note"
+}
+
 if ! command -v zenity >/dev/null 2>&1; then
   write_template
   echo "Phoenix Game Server ready."
@@ -151,6 +217,7 @@ fi
 
 CHOICE=$(zenity --list --title="Phoenix Game Server" --width=520 --height=360 \
   --column="Action" \
+  "Server Profiles (Quick Install)" \
   "Install Server (SteamCMD)" \
   "Update Server (SteamCMD)" \
   "Install/Update SteamCMD" \
@@ -159,6 +226,9 @@ CHOICE=$(zenity --list --title="Phoenix Game Server" --width=520 --height=360 \
   "Run SteamCMD (advanced)")
 
 case "$CHOICE" in
+  "Server Profiles (Quick Install)")
+    install_profile
+    ;;
   "Install Server (SteamCMD)")
     install_server_interactive
     ;;
