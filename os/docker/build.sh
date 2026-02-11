@@ -22,34 +22,33 @@ fi
 
 bash ./auto/config
 
-echo "[phoenix-os] Staging app into live-build overlay..."
+echo "[phoenix-os] Staging app into live-build overlay (tarball)..."
 rm -rf "$STAGE_DIR"
 mkdir -p "$STAGE_DIR"
-RSYNC_EXCLUDES=(
-  --exclude "node_modules/"
-  --exclude "__pycache__/"
-  --exclude "*.pyc"
-  --exclude ".pytest_cache/"
-  --exclude ".mypy_cache/"
-  --exclude ".ruff_cache/"
-  --exclude ".cache/"
-  --exclude "logs/"
-)
-rsync -a --delete "${RSYNC_EXCLUDES[@]}" "$ROOT/app/" "$STAGE_DIR/app/"
-
-rm -f "$STAGE_DIR/app/.env" "$STAGE_DIR/app/.env."* 2>/dev/null || true
-rm -rf "$STAGE_DIR/app/logs" 2>/dev/null || true
-rm -rf "$STAGE_DIR/app/data/users" 2>/dev/null || true
-rm -rf "$STAGE_DIR/app/data/memory_exports" 2>/dev/null || true
-rm -rf "$STAGE_DIR/app/data/session_logs" 2>/dev/null || true
-rm -f "$STAGE_DIR/app/data/memory.json" 2>/dev/null || true
-rm -f "$STAGE_DIR/app/data/visual_memory.json" 2>/dev/null || true
-rm -f "$STAGE_DIR/app/data/preferences_log.json" 2>/dev/null || true
-rm -f "$STAGE_DIR/app/data/secrets_hashed.json" 2>/dev/null || true
-rm -f "$STAGE_DIR/app/data/audit.log" 2>/dev/null || true
-rm -f "$STAGE_DIR/app/data/ui_layout.json" 2>/dev/null || true
-rm -f "$STAGE_DIR/app/data/ui_settings.json" 2>/dev/null || true
-rm -f "$STAGE_DIR/app/data/Bjorgsun26_memory_handoff.json" 2>/dev/null || true
+APP_TAR="$STAGE_DIR/phoenix-app.tar.gz"
+tar -czf "$APP_TAR" \
+  --exclude "node_modules" \
+  --exclude "__pycache__" \
+  --exclude "*.pyc" \
+  --exclude ".pytest_cache" \
+  --exclude ".mypy_cache" \
+  --exclude ".ruff_cache" \
+  --exclude ".cache" \
+  --exclude "logs" \
+  --exclude "app/.env" \
+  --exclude "app/.env.*" \
+  --exclude "app/data/users" \
+  --exclude "app/data/memory_exports" \
+  --exclude "app/data/session_logs" \
+  --exclude "app/data/memory.json" \
+  --exclude "app/data/visual_memory.json" \
+  --exclude "app/data/preferences_log.json" \
+  --exclude "app/data/secrets_hashed.json" \
+  --exclude "app/data/audit.log" \
+  --exclude "app/data/ui_layout.json" \
+  --exclude "app/data/ui_settings.json" \
+  --exclude "app/data/Bjorgsun26_memory_handoff.json" \
+  -C "$ROOT" app
 
 find "$LIVE_DIR/config/hooks" -type f -name "*.chroot" -exec chmod +x {} \; 2>/dev/null || true
 find "$LIVE_DIR/config/includes.chroot/usr/local/bin" -type f -exec chmod +x {} \; 2>/dev/null || true

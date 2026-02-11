@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+ARCHIVE="/opt/phoenix/phoenix-app.tar.gz"
+
+if [ -f "$ARCHIVE" ]; then
+  echo "[phoenix-os] Extracting Phoenix app payload..."
+  mkdir -p /opt/phoenix
+  tar -xzf "$ARCHIVE" -C /opt/phoenix
+  rm -f "$ARCHIVE"
+fi
