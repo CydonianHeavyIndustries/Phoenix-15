@@ -99,47 +99,24 @@ if errorlevel 1 (
   goto :fail
 )
 
-set "REMOTE_SCRIPT=%TEMP%\phoenix_remote_setup_%RANDOM%%RANDOM%.sh"
+set "REMOTE_TEMPLATE=%~dp0remote_install_target_build.sh"
 
-echo [2/5] Writing remote setup script...
-(
-  echo #!/usr/bin/env bash
-  echo set -euo pipefail
-  echo REPO_URL='%REPO_URL%'
-  echo BRANCH='%BRANCH%'
-  echo TARGET_DIR='%TARGET_DIR_REMOTE%'
-  echo echo "[phoenix] Updating apt..."
-  echo sudo apt-get update
-  echo sudo apt-get install -y git curl ca-certificates rsync dos2unix live-build debootstrap xorriso syslinux grub-pc-bin grub-efi-amd64-bin mtools dosfstools squashfs-tools
-  echo echo "[phoenix] Preparing workspace..."
-  echo rm -rf "$TARGET_DIR"
-  echo git clone --depth 1 --filter=blob:none --sparse --single-branch --branch "$BRANCH" "$REPO_URL" "$TARGET_DIR"
-  echo cd "$TARGET_DIR"
-  echo git sparse-checkout set os
-  echo bash os/bootstrap_iso_workspace.sh --force --target "$TARGET_DIR" --branch "$BRANCH" --repo "$REPO_URL"
-  echo if [ ! -f "$TARGET_DIR/os/build_iso_ubuntu.sh" ]; then echo "[phoenix] Missing build script: $TARGET_DIR/os/build_iso_ubuntu.sh"; exit 1; fi
-  echo ls -l "$TARGET_DIR/os/build_iso_ubuntu.sh" ^| cat
-  echo echo "[phoenix] Running ISO build..."
-  echo bash "$TARGET_DIR/os/build_iso_ubuntu.sh"
-  echo echo "[phoenix] Build complete."
-  echo echo "[phoenix] ISO path: $TARGET_DIR/os/out/phoenix-15.iso"
-) > "%REMOTE_SCRIPT%"
-if errorlevel 1 (
-  echo [ERROR] Failed creating temporary remote script.
+echo [2/5] Preparing setup template...
+if not exist "%REMOTE_TEMPLATE%" (
+  echo [ERROR] Missing remote template script:
+  echo        %REMOTE_TEMPLATE%
   goto :fail
 )
 
 echo [3/5] Uploading setup script to target...
-scp "%REMOTE_SCRIPT%" "%TARGET_USER%@%TARGET_HOST%:~/phoenix_remote_setup.sh"
+scp "%REMOTE_TEMPLATE%" "%TARGET_USER%@%TARGET_HOST%:~/phoenix_remote_setup.sh"
 if errorlevel 1 (
   echo [ERROR] Upload failed.
-  del /q "%REMOTE_SCRIPT%" >nul 2>&1
   goto :fail
 )
-del /q "%REMOTE_SCRIPT%" >nul 2>&1
 
 echo [4/5] Running remote setup/build (you may be prompted for sudo password)...
-ssh -tt "%TARGET_USER%@%TARGET_HOST%" "sed -i 's/\r$//' ~/phoenix_remote_setup.sh 2>/dev/null || true; chmod +x ~/phoenix_remote_setup.sh && bash ~/phoenix_remote_setup.sh"
+ssh -tt "%TARGET_USER%@%TARGET_HOST%" "sed -i 's/\r$//' ~/phoenix_remote_setup.sh 2>/dev/null || true; chmod +x ~/phoenix_remote_setup.sh && bash ~/phoenix_remote_setup.sh \"%REPO_URL%\" \"%BRANCH%\" \"%TARGET_DIR_REMOTE%\""
 if errorlevel 1 (
   echo [ERROR] Remote build failed. Check remote logs:
   echo        %TARGET_DIR_REMOTE%/os/out/build-iso.log
