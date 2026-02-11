@@ -3,6 +3,7 @@ set -e
 
 # Prevent recursive auto/config execution when lb config re-invokes auto/config.
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+cd "$SCRIPT_DIR/.."
 LOCK_FILE="$SCRIPT_DIR/.phx_lb_config_running"
 if [ -n "${PHX_LB_CONFIG_RUNNING:-}" ] || [ -f "$LOCK_FILE" ]; then
   exit 0
