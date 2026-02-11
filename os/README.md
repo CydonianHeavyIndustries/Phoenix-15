@@ -1,9 +1,9 @@
-# Phoenix-15 USB OS (Debian 12)
+# Phoenix-15 USB OS (Ubuntu 24.04)
 
-This folder builds a bootable Debian 12 (Bookworm) ISO that boots straight into the Phoenix-15 UI on a minimal desktop. The OS runs from the USB and avoids internal disks unless the user explicitly opts in.
+This folder builds a bootable Ubuntu 24.04 (Noble) ISO that boots straight into the Phoenix-15 UI on a minimal desktop. The OS runs from the USB and avoids internal disks unless the user explicitly opts in.
 
 ## What You Get
-- Debian 12 live ISO (hybrid UEFI + legacy BIOS).
+- Ubuntu 24.04 live ISO (hybrid UEFI + legacy BIOS).
 - Minimal desktop (XFCE + LightDM auto-login).
 - Phoenix-15 backend + UI server as systemd services.
 - Chromium kiosk launch as the primary interface.
@@ -20,9 +20,9 @@ This folder builds a bootable Debian 12 (Bookworm) ISO that boots straight into 
    `os\\out\\phoenix-15.iso`
 
 ## Build the ISO (WSL/Linux)
-1) Install Docker or live-build on WSL.
+1) Install Docker or live-build on WSL/Ubuntu.
 2) Run:
-   `sudo bash os/build_iso.sh`
+   `bash os/build_iso_ubuntu.sh`
 
 ## Flash to USB
 - Use Rufus or Balena Etcher to write `phoenix-15.iso` to the USB.

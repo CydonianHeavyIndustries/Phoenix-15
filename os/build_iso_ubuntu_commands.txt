@@ -5,9 +5,7 @@ cd ~/Phoenix-15
 git pull
 
 2) Run the Ubuntu build helper
-cd ~/Phoenix-15/os
-chmod +x build_iso_ubuntu.sh
-./build_iso_ubuntu.sh
+bash ~/Phoenix-15/os/build_iso_ubuntu.sh
 
 3) ISO output (if successful)
 ~/Phoenix-15/os/out/phoenix-15.iso

@@ -7,7 +7,7 @@ sudo apt install -y live-build debootstrap xorriso syslinux grub-pc-bin grub-efi
 2) Clone + build:
 git clone https://github.com/CydonianHeavyIndustries/Phoenix-15.git
 cd Phoenix-15
-sudo bash os/build_iso.sh
+bash os/build_iso_ubuntu.sh
 
 3) Output ISO:
 os/out/phoenix-15.iso
