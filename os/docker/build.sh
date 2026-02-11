@@ -9,6 +9,17 @@ STAGE_DIR="$LIVE_DIR/config/includes.chroot/opt/phoenix"
 mkdir -p "$OUT_DIR"
 mkdir -p "$LIVE_DIR/config/includes.chroot"
 
+cd "$LIVE_DIR"
+chmod +x auto/config auto/build auto/clean || true
+find "$LIVE_DIR/config/hooks" -type f -name "*.chroot" -exec chmod +x {} \; 2>/dev/null || true
+find "$LIVE_DIR/config/includes.chroot/usr/local/bin" -type f -exec chmod +x {} \; 2>/dev/null || true
+
+if [ "${PHX_LB_CLEAN:-1}" = "1" ]; then
+  ./auto/clean || true
+fi
+
+./auto/config
+
 echo "[phoenix-os] Staging app into live-build overlay..."
 rm -rf "$STAGE_DIR"
 mkdir -p "$STAGE_DIR"
@@ -28,16 +39,9 @@ rm -f "$STAGE_DIR/app/data/ui_layout.json" 2>/dev/null || true
 rm -f "$STAGE_DIR/app/data/ui_settings.json" 2>/dev/null || true
 rm -f "$STAGE_DIR/app/data/Bjorgsun26_memory_handoff.json" 2>/dev/null || true
 
-cd "$LIVE_DIR"
-chmod +x auto/config auto/build auto/clean || true
 find "$LIVE_DIR/config/hooks" -type f -name "*.chroot" -exec chmod +x {} \; 2>/dev/null || true
 find "$LIVE_DIR/config/includes.chroot/usr/local/bin" -type f -exec chmod +x {} \; 2>/dev/null || true
 
-if [ "${PHX_LB_CLEAN:-1}" = "1" ]; then
-  ./auto/clean || true
-fi
-
-./auto/config
 ./auto/build
 
 ISO=""
