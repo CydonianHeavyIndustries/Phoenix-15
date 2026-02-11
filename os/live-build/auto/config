@@ -1,6 +1,12 @@
 #!/bin/sh
 set -e
 
+# Prevent recursive auto/config execution when lb config re-invokes auto/config.
+if [ -n "${PHX_LB_CONFIG_RUNNING:-}" ]; then
+  exit 0
+fi
+export PHX_LB_CONFIG_RUNNING=1
+
 lb config \
   --distribution bookworm \
   --architectures amd64 \
