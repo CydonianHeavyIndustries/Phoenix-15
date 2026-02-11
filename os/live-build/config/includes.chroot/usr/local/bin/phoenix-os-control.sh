@@ -43,6 +43,9 @@ case "$ACTION" in
   update|usbupdate)
     open_cmd /usr/local/bin/phoenix-update-from-usb.sh && exit 0
     ;;
+  security|antivirus|firewall|protect)
+    open_cmd /usr/local/bin/phoenix-security-center.sh && exit 0
+    ;;
   mail|email)
     open_cmd thunderbird && exit 0
     ;;

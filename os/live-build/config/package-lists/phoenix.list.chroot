@@ -21,6 +21,13 @@ flatpak
 xdg-utils
 zenity
 synaptic
+ufw
+gufw
+clamav
+clamav-daemon
+clamav-freshclam
+auditd
+rkhunter
 blueman
 bluez
 bluez-tools

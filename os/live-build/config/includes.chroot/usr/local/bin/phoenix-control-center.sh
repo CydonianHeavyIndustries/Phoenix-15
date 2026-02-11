@@ -18,6 +18,7 @@ CHOICE=$(zenity --list --title="Phoenix Control Center" --width=520 --height=420
   "App Manager" \
   "Mail" \
   "Update from USB Zip" \
+  "Security Center" \
   "Integrity Check" \
   "Offline Docs" \
   "Network Safe Mode" \
@@ -37,6 +38,7 @@ case "$CHOICE" in
   "App Manager") /usr/local/bin/phoenix-os-control.sh apps ;;
   "Mail") /usr/local/bin/phoenix-os-control.sh mail ;;
   "Update from USB Zip") /usr/local/bin/phoenix-os-control.sh update ;;
+  "Security Center") /usr/local/bin/phoenix-os-control.sh security ;;
   "Integrity Check") /usr/local/bin/phoenix-os-control.sh integrity ;;
   "Offline Docs") /usr/local/bin/phoenix-os-control.sh docs ;;
   "Network Safe Mode") /usr/local/bin/phoenix-os-control.sh network-safe ;;

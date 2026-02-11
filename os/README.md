@@ -72,6 +72,7 @@ First-boot UX notes are captured in:
 - App downloads: `Phoenix App Downloader` launcher or `/usr/local/bin/phoenix-app-download.sh`.
 - Game server helper: `/usr/local/bin/phoenix-game-server.sh` (SteamCMD install + templates).
 - USB zip updates: `/usr/local/bin/phoenix-update-from-usb.sh` (Apply app updates from a zip on USB).
+- Security center: `/usr/local/bin/phoenix-security-center.sh` (firewall, antivirus, quarantine, live protection).
 - Integrity check: `/usr/local/bin/phoenix-integrity-check.sh`.
 - Offline docs: `/usr/local/bin/phoenix-offline-docs.sh`.
 - Network safe mode: `/usr/local/bin/phoenix-network-safe.sh`.
