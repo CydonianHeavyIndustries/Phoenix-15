@@ -16,12 +16,23 @@ find "$LIVE_DIR/config/includes.chroot/usr/local/bin" -type f -exec chmod +x {} 
 rm -f "$LIVE_DIR/auto/.phx_lb_config_running" 2>/dev/null || true
 rm -rf "$LIVE_DIR/config/includes.chroot/opt/phoenix/app" 2>/dev/null || true
 
-if [ "${PHX_LB_CLEAN:-1}" = "1" ]; then
-  bash ./auto/clean || true
+AUTO_DIR="$LIVE_DIR/auto"
+AUTO_TMP="$LIVE_DIR/.auto.phx"
+restore_auto() {
+  if [ -d "$AUTO_TMP" ]; then
+    rm -rf "$AUTO_DIR"
+    mv "$AUTO_TMP" "$AUTO_DIR"
+  fi
+}
+trap restore_auto EXIT
+if [ -d "$AUTO_DIR" ]; then
+  rm -rf "$AUTO_TMP"
+  mv "$AUTO_DIR" "$AUTO_TMP"
 fi
 
-export PHX_LB_SKIP_AUTO_CONFIG=1
-export PHX_LB_SKIP_AUTO_BUILD=1
+if [ "${PHX_LB_CLEAN:-1}" = "1" ]; then
+  lb clean --purge || true
+fi
 
 lb config \
   --distribution bookworm \
