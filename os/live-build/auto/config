@@ -2,10 +2,12 @@
 set -e
 
 # Prevent recursive auto/config execution when lb config re-invokes auto/config.
-if [ -n "${PHX_LB_CONFIG_RUNNING:-}" ]; then
+LOCK_FILE=".phx_lb_config_running"
+if [ -n "${PHX_LB_CONFIG_RUNNING:-}" ] || [ -f "$LOCK_FILE" ]; then
   exit 0
 fi
 export PHX_LB_CONFIG_RUNNING=1
+touch "$LOCK_FILE"
 
 lb config \
   --distribution bookworm \
@@ -14,3 +16,5 @@ lb config \
   --archive-areas "main contrib non-free-firmware" \
   --debian-installer live \
   --bootappend-live "boot=live components username=phoenix hostname=phoenix-15 locales=en_US.UTF-8 keyboard-layouts=us"
+
+rm -f "$LOCK_FILE"
