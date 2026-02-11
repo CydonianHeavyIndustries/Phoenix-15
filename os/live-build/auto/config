@@ -24,9 +24,9 @@ export PHX_LB_CONFIG_GUARD=1
 export PHX_LB_SKIP_AUTO_CONFIG=1
 
 lb config \
-  --distribution bookworm \
+  --mode ubuntu \
+  --distribution noble \
   --architectures amd64 \
   --binary-images iso-hybrid \
-  --archive-areas "main contrib non-free-firmware" \
-  --debian-installer live \
+  --archive-areas "main restricted universe multiverse" \
   --bootappend-live "boot=live components username=phoenix hostname=phoenix-15 locales=en_US.UTF-8 keyboard-layouts=us"

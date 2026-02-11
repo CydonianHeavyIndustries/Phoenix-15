@@ -35,16 +35,14 @@ if [ "${PHX_LB_CLEAN:-1}" = "1" ]; then
 fi
 
 lb config \
-  --mode debian \
-  --distribution bookworm \
+  --mode ubuntu \
+  --distribution noble \
   --architectures amd64 \
   --binary-images iso-hybrid \
-  --archive-areas "main contrib non-free-firmware" \
-  --linux-packages "none" \
-  --security false \
-  --mirror-bootstrap "http://deb.debian.org/debian" \
-  --mirror-binary "http://deb.debian.org/debian" \
-  --mirror-chroot "http://deb.debian.org/debian" \
+  --archive-areas "main restricted universe multiverse" \
+  --mirror-bootstrap "http://archive.ubuntu.com/ubuntu" \
+  --mirror-binary "http://archive.ubuntu.com/ubuntu" \
+  --mirror-chroot "http://archive.ubuntu.com/ubuntu" \
   --bootappend-live "boot=live components username=phoenix hostname=phoenix-15 locales=en_US.UTF-8 keyboard-layouts=us"
 
 echo "[phoenix-os] Staging app into live-build overlay (tarball)..."
